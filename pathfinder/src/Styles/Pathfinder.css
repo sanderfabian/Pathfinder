@@ -1,0 +1,77 @@
+:root {
+    --Background: #f9f9f9;
+    --Border: #C9A2FF;
+    --Secondary: #C0D8E1;
+    --Tertiary: #7100FF;
+    --FontDark: #363636;
+}
+
+body {
+    background: var(--Background);
+    font-family: 'Century-Gothic', 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+}
+
+
+
+/*Nav*/
+.brandName{
+    max-height: 30px;
+    
+}
+
+.nav{
+    background: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+
+.loginGroup{
+    padding: 10px ;
+    border: var(--Border) 3px dashed;
+    display: flex;
+    border-radius: 10px;
+    gap: 5px;
+    min-width: calc(28% - 23px);
+}
+
+/* Button styles */
+.btnGroup {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.btnIcon {
+    height: 30px;
+    width: 30px;
+    margin-left: -20px;
+    background-position: center;
+    
+}
+
+.btn {
+    width: inherit;
+    display: flex;
+    border: none;
+    background-color: white;
+    color: var(--FontDark);
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
+}
+
+.btnCta{
+    background-color: var(--Tertiary);
+    color: white;
+}
+
+.btn:hover {
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 3px -2px, rgba(0, 0, 0, 0.14) 0px 3px 4px 0px, rgba(0, 0, 0, 0.12) 0px 1px 8px 0px;
+    transition: 0.5s;
+}
+
+
