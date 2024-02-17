@@ -1,0 +1,127 @@
+
+  
+
+.form{
+    min-height: 95vh;
+    
+    display: flex;
+    flex-direction: column;
+}
+
+
+.formBox{
+    margin-top: 5px;
+    border: var(--Border) dashed 3px;
+    border-radius: var(--borderRadius);
+    padding: 20px;
+    display: flex;
+   
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.formHeader{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-grow: 1;
+}
+
+.formHeader div{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+}
+.formHeader div h1,
+.formHeader div h2,
+.formHeader div h3,
+.formHeader div h4,
+.formHeader div h5,
+.formHeader div h6,
+.formHeader div p {
+    margin: 0px;
+    text-align: start;
+}
+
+.formHeader div:nth-child(1){
+    display: flex;
+    flex-direction: row;align-items: center;
+    justify-content: space-between;
+    gap:0px;
+}
+
+.formHeader div h3{
+    color: var(--Tertiary);
+    margin: 0px;
+
+}
+
+.toggleBoxGroup{
+    display: flex!important;
+    flex-direction: column!important;
+    flex-grow: 1;
+    gap:5px;
+    
+}
+
+.toggleBoxGroup a{
+    width: 100%;
+    text-decoration: none;
+}
+
+.toggleBox{
+    background-color: var(--Grey);
+    border-radius: var(--borderRadius);
+    padding: 20px;
+    width: calc(100% - 40px);
+    
+    
+    display: flex!important;
+    height: 100%;
+    flex-grow: 1!important;
+    flex-direction: column!important;
+    justify-content: start!important;
+    align-items: start!important;
+}
+
+.toggleBox div{
+    display: flex;
+    flex-direction: row;
+}
+
+.gridForm{
+    display: grid;
+    gap: 10px;
+    min-height: inherit;
+    grid-template-columns: 1fr 1fr;
+    
+    position: relative;
+    margin: auto;
+    flex-grow: 1;
+}
+
+
+.formSpace{
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.formSpace div{
+display:  flex!important;
+flex-direction: column!important;
+width: 100%;
+align-items: start!important;
+gap: 10px!important;
+}
+
+.formHolder{
+    
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;    
+}
+
+.formSpace h3{
+    color: var(--FontDark)!important;
+}

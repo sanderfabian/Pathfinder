@@ -1,15 +1,5 @@
-:root {
-    --Background: #f9f9f9;
-    --Border: #C9A2FF;
-    --Secondary: #C0D8E1;
-    --Tertiary: #7100FF;
-    --FontDark: #363636;
-}
 
-body {
-    background: var(--Background);
-    font-family: 'Century-Gothic', 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
-}
+
 
 
 
@@ -27,13 +17,48 @@ body {
     
 }
 
+.loggedUser{
+    display: flex;
+    flex-direction: row;
+    padding: 0px 20px;
+    justify-content: start;
+    align-items: center;
+    gap: 0px;
+    width: 100%;
+}
+
+.loggedUser h5{
+    margin:0px;
+}
+
 .loginGroup{
     padding: 10px ;
     border: var(--Border) 3px dashed;
     display: flex;
     border-radius: 10px;
     gap: 5px;
+    
+    
+    
+}
+.loginGroup a{
+    width: 100%;
+    text-decoration: none;
+}
+
+
+.loginGroupHome{
+    padding: 10px ;
+    border: var(--Border) 3px dashed;
+    display: flex;
+    border-radius: 10px;
+    gap: 5px;
     min-width: calc(28% - 23px);
+}
+
+.loginGroupHome a{
+    width: 100%;
+    text-decoration: none;
 }
 
 /* Button styles */
@@ -54,6 +79,7 @@ body {
 .btn {
     width: inherit;
     display: flex;
+    font-family: 'Century-Gothic', 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
     border: none;
     background-color: white;
     color: var(--FontDark);
@@ -61,6 +87,40 @@ body {
     border-radius: 8px;
     font-weight: 700;
     box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
+}
+
+.backBtnGroup{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    
+}
+.backBtnGroup img{
+    rotate: 180deg;
+    height: 10px;
+}
+.backBtn{
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 10px;
+    color: var(--Tertiary);
+    font-weight: 600;
+    font-family:'Century-Gothic','Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,  'Helvetica Neue', sans-serif;
+}
+.btn:active{
+    filter: saturate(50%);
+    transition: 0.2s;
+    
+}
+
+.btnBlue{
+    background-color: var(--Secondary);
+}
+
+.btnRed{
+    background-color: var(--Alert);
+    color: white;
 }
 
 .btnCta{
@@ -75,3 +135,19 @@ body {
 }
 
 
+
+/* Loading screen animation position*/
+.loading-screen {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+    z-index: 9999; /* Ensure it's above other content */
+  }
+  

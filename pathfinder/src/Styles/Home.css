@@ -1,10 +1,4 @@
-:root {
-    --Background: #f9f9f9;
-    --Border: #c9a2ff82;
-    --Secondary: #C0D8E1;
-    --Tertiary: #7100FF;
-    --FontDark: #363636;
-}
+
 
 body{
     font-family: 'Century-Gothic','Open Sans',system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,  'Helvetica Neue', sans-serif;
@@ -27,8 +21,11 @@ body::before {
 }
 .home{
     
-    min-height: calc(100vh - 20px);
+    min-height: calc(100vh - 40px);
     padding: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Grid layout*/
@@ -39,6 +36,8 @@ body::before {
     min-height: inherit;
     grid-auto-rows: min-content 1fr 1fr;
     grid-auto-columns: 1fr 1fr 0.8fr;
+    position: relative;
+    margin: auto;
 }
 
 .grid-item{
@@ -58,9 +57,12 @@ body::before {
 .grid-item4{
     grid-column-start:3 ;
     grid-column-end: 4;
-    grid-row-start: 2;
-    grid-row-end: 4;
-    
+    grid-row-start: 1;
+    grid-row-end: 3;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    gap:10px;
 }
 
 .grid-itemNav{
@@ -95,19 +97,19 @@ body::before {
 .welcome h1,h4,p{
     padding: 0px;
     margin:0px;
-    margin-bottom: -2px;
+    margin: -2px;
     letter-spacing: -0.05em;
 }
 
 .welcome h1{
-    font-weight: 700;
-    
+    font-weight: 900;
+    margin:-10px 0px;
     color: var(--Tertiary);
 }
 
 .welcome img{
     margin: 0px;
-    margin-top: -10px;
+    
 }
 
 .welcome div{
@@ -153,8 +155,16 @@ body::before {
  gap: 10px;
 }
 
+.regBox a{
+    text-decoration: none;
+    width: 100%;
+    
+    
+}
+
 .regBox h2,h4{
 margin: 0px;
+letter-spacing: -0.05em;
 }
 .regBox div h4{
     margin: 0px -10px;;
@@ -162,9 +172,64 @@ margin: 0px;
 
 
 .regBoxBtn{
-   padding: 40px 10px;
+   padding: 40px;
    display: flex;
    text-align: center;
    justify-content: center;
    align-items: center;
+}
+
+
+/*Grid3*/
+.video{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    padding: 10px;
+    height: calc(100% - 20px);
+    
+   
+}
+
+.videoDesc{
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-self: center;
+    gap: 10px;
+
+}
+
+.videoDesc div{
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    letter-spacing: -0.05em;
+}
+
+/*Grid4*/
+
+.testimonialHeader{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--Secondary);
+    margin: 10px;
+    border-radius: 10px;
+    
+}
+
+.testimonialHeader img{
+    rotate: 270deg;
+    
+}
+
+.testimonialHolder{
+    border: dashed var(--Border) 3px;
+    height: 100%;
+    border-radius: 10px;
 }

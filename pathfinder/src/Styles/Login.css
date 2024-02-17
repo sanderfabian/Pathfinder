@@ -1,0 +1,94 @@
+:root {
+    --Background: #f9f9f9;
+    --Border: #C9A2FF;
+    --Secondary: #C0D8E1;
+    --Tertiary: #7100FF;
+    --Alert: #F36565;
+    --FontDark: #363636;
+}
+
+.loginBody{
+    display: flex;
+    height: calc(100vh - 20px);
+    color: var(--FontDark);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.loginRegBox{
+    display: flex;
+    flex-direction: column;
+    border: var(--Border) 3px dashed;
+    border-radius: 20px;
+    gap: 10px;
+    padding: 10px;
+}
+
+.card{
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    flex-direction: column;
+    display: flex;
+    gap: 10px;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
+}
+
+.cardHeader{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cardHeader div{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+
+.loginFields{
+    display: flex;
+    flex-direction: column; 
+    min-width: 300px;
+    justify-content: start;
+    align-items: start;
+    width:100%;
+    
+}
+
+.loginFields input{
+    width: calc(100% - 30px);
+    padding: 20px 10px;
+    border-radius: 10px;
+    border: transparent 4px solid;
+    background-color: var(--Background);
+}
+
+.loginFields input:focus {
+    border: #7100FF 4px solid;
+    outline: none;
+  }
+
+.loginFields input:active{
+    border: #7100FF 4px solid;
+}
+
+.loginFields h4,h5{
+    margin:5px;
+}
+
+.fatBtn{
+    padding: 30px 10px;
+    justify-content: center;
+    
+    
+}
+
+.errorbox{
+    background-color: black;
+    margin: 20px;
+}
