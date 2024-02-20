@@ -22,26 +22,7 @@ export default function Form1() {
   const [bachelorDegrees, setBachelorDegrees] = useState([]);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const user = auth.currentUser;
-        if (user) {
-          const q = query(collection(firestore, 'User'), where('UID', '==', user.uid));
-          const querySnapshot = await getDocs(q);
-          const userDataArray = [];
-          querySnapshot.forEach(doc => {
-            userDataArray.push(doc.data());
-          });
-          setUserData(userDataArray);
-        } else {
-          console.log('User not logged in');
-        }
-        //setLoading(false); // Set loading to false once user data is fetched or determined to be not logged in
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        //setLoading(false); // In case of error, also set loading to false
-      }
-    };
+    
 
     const fetchBachelorDegrees = async () => {
       try {
@@ -57,7 +38,7 @@ export default function Form1() {
       }
     };
 
-    fetchUserData();
+    
     fetchBachelorDegrees();
   }, []);
 

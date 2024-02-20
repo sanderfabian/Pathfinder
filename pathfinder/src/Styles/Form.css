@@ -125,3 +125,138 @@ gap: 10px!important;
 .formSpace h3{
     color: var(--FontDark)!important;
 }
+
+.formFields{
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+}
+
+
+
+/* DND group*/
+
+.gridForm3{
+    display: grid;
+    gap: 10px;
+    min-height: inherit;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: min-content 1fr min-content ;
+    position: relative;
+    margin: auto;
+    flex-grow: 1;
+    margin-top: 10px;
+}
+
+
+.courseCard{
+    
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px;
+    text-align: start;
+    z-index: 10;
+}
+
+.courseCard h5{
+    color: var(--Tertiary);
+}
+
+.courseCard div{
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 5px;
+    align-items: start;
+    
+}
+
+.courseCard h5,
+.courseCard h4,
+.courseCard h6{
+    margin: 0px;
+    
+}
+
+.reqType{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.availableCourses{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+    background-color: transparent;
+    justify-content: start;
+    box-shadow: none;
+    border: solid #5555551c 3px;
+}
+
+
+.cardHolder{
+    max-height: 75vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    border: none;
+    padding:5px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    grid-row-start: 2;
+    background-color: var(--Grey);
+    
+}
+
+.cardHolder h5,
+.cardHolder h6{
+    user-select: none;
+}
+
+
+  
+  /* Style scrollbar for Chrome, Safari, and Opera */
+  .scrollable-div::-webkit-scrollbar {
+    width: 12px; /* Width of the scrollbar */
+    
+  }
+  
+  /* Track */
+  .scrollable-div::-webkit-scrollbar-track {
+    background: var(--Offwhite); /* Color of the track */
+    border-radius: 5px;
+    margin: 5px;
+    
+  }
+  
+  /* Handle */
+  .scrollable-div::-webkit-scrollbar-thumb {
+    background: var(--Secondary); /* Color of the handle */
+    border-radius: 10px; /* Roundness of the handle */
+  }
+  
+  /* Handle on hover */
+  .scrollable-div::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Color of the handle when hovered */
+  }
+
+
+.bobby{
+    border: red solid 3px;
+    display: flex;
+    
+    
+    flex-direction: column;
+    min-height: 200px;
+  }
+
+#selection{
+    background-color: aquamarine;
+  }

@@ -6,6 +6,7 @@ import Dashboard from './Pages/Dashboard';
 import Form1 from './Pages/Form1';
 import './App.css';
 import Form2 from './Pages/Form2';
+import Form3 from './Pages/Form3';
 import ProtectedRoute from './Components/ProtectedRoute'
 import { UserAuthProvider, useUserAuth } from './Components/AuthContext'; // Import AuthProvider and useAuth
 import PathwayRoute from './Components/PathwayRoute';
@@ -34,6 +35,10 @@ function App() {
             <Route
               path="/form2"
               element={<ProtectedRoute><Form2/></ProtectedRoute>}
+            ></Route>
+            <Route
+              path="/form3"
+              element={<Form3/>}
             ></Route>
           </Routes>
         </div>

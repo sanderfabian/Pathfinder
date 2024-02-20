@@ -60,7 +60,7 @@ export const UserAuthProvider = ({ children }) => {
                     if (userDocSnapshot.exists()) {
                         setMoreUserInfo(userDocSnapshot.data());
                         localStorage.setItem('Username', userDocSnapshot.data().Username);
-    
+                        
                         // Check if the user has a pathway
                         const pathwayCollectionRef = collection(firestore, 'User', currentUser.uid, 'Pathway');
                         const pathwaySnapshot = await getDocs(pathwayCollectionRef);

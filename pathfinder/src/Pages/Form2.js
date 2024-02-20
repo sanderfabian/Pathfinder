@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { auth, firestore } from '../firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { getDoc } from 'firebase/firestore';
 import Navbar from '../Components/Navbar';
 import { BeatLoader } from 'react-spinners';
 import Curious from '../Assets/Images/curious.png';
@@ -15,61 +16,124 @@ import { useUserAuth } from '../Components/AuthContext';
 
 export default function Form2() {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState(null);
-  const { loading } = useUserAuth();
-  const [isChecked, setIsChecked] = useState(false);
+  const { loading, user } = useUserAuth();
+  const [userData, setUserData] = useState(null); // Define userData state
   const [degreeValue, setDegreeValue] = useState('');
+  const [perSem, setPerSem] = useState('');
+  const [majorValue, setMajorValue] = useState('');
   const [bachelorDegrees, setBachelorDegrees] = useState([]);
+  const [majors, setMajors] = useState([]);
+  const [showMajorGroup, setShowMajorGroup] = useState(false);
+  const [study, setStudy] = useState('');
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchDegrees = async () => {
       try {
-        const user = auth.currentUser;
-        if (user) {
-          const q = query(collection(firestore, 'User'), where('UID', '==', user.uid));
-          const querySnapshot = await getDocs(q);
-          const userDataArray = [];
-          querySnapshot.forEach(doc => {
-            userDataArray.push(doc.data());
-          });
-          setUserData(userDataArray);
-        } else {
-          console.log('User not logged in');
-        }
-        //setLoading(false); // Set loading to false once user data is fetched or determined to be not logged in
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        //setLoading(false); // In case of error, also set loading to false
-      }
-    };
-
-    const fetchBachelorDegrees = async () => {
-      try {
-        const q = collection(firestore, 'BachelorDegree');
+        const q = collection(firestore, study);
         const querySnapshot = await getDocs(q);
-        const degrees = [];
-        querySnapshot.forEach(doc => {
-          degrees.push(doc.data().Title);
-        });
+        const degrees = querySnapshot.docs.map(doc => doc.data().Title);
         setBachelorDegrees(degrees);
       } catch (error) {
-        console.error('Error fetching bachelor degrees:', error);
+        console.error('Error fetching degrees:', error);
+      }
+    };
+  
+    fetchDegrees();
+  }, [study]); // Add study as a dependency
+  
+
+  const updateUser = async (userId, majorValue, degreeValue, perSem) => {
+    try {
+      const userDocRef = doc(firestore, 'User', userId);
+      await updateDoc(userDocRef, {
+        Major: majorValue,
+        Program: degreeValue,
+        CoursesPerSemester: perSem,
+        Study: "BachelorDegree"
+      });
+      console.log('User data updated successfully.');
+    } catch (error) {
+      console.error('Error updating user data:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchMajors = async () => {
+      try {
+        if (degreeValue) {
+          const cleanedDegreeValue = degreeValue.trim();
+          const studyQuery = query(collection(firestore, study), where('Title', '==', cleanedDegreeValue));
+          const studySnapshot = await getDocs(studyQuery);
+          if (!studySnapshot.empty) {
+            const studyDoc = studySnapshot.docs[0];
+            const majorCollectionRef = collection(firestore, study, studyDoc.id, 'Major');
+            const majorSnapshot = await getDocs(majorCollectionRef);
+            const majors = majorSnapshot.docs.map(doc => doc.data().Title);
+            setMajors(majors);
+            setShowMajorGroup(true);
+          } else {
+            console.error(`No ${study} found with title "${cleanedDegreeValue}"`);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching majors:', error);
       }
     };
 
-    fetchUserData();
-    fetchBachelorDegrees();
-  }, []);
+    fetchMajors();
+  }, [degreeValue, study]);
 
+  const isMajorSelectDisabled = loading || !degreeValue || !majors.length;
 
+  useEffect(() => {
+    const updateUser = async () => {
+      try {
+        if (user && user.uid && degreeValue && majorValue && perSem) {
+          const userDocRef = doc(firestore, 'User', user.uid);
+          const userDocSnapshot = await getDoc(userDocRef);
+          const cleanedDegreeValue = degreeValue.replace(/\s+/g, '');
+          let cleanedMajor = '';
 
+          const match = majorValue.match(/Majoring\s+in\s+(.*)/i);
+          if (match && match.length > 1) {
+            cleanedMajor = match[1].replace(/\s+/g, '');
+          } else {
+            // handle error condition
+          }
 
+          if (userDocSnapshot.exists()) {
+            await updateDoc(userDocRef, {
+              Study: study,
+              Major: cleanedMajor,
+              Program: cleanedDegreeValue,
+              CoursesPerSemester: perSem
+            });
+            console.log('User data updated successfully.');
+          } else {
+            console.error('User document not found.');
+          }
+        } else {
+          console.error('One or more required fields are empty.');
+        }
+      } catch (error) {
+        console.error('Error updating user data:', error);
+      }
+    };
+
+    updateUser();
+  }, [user, degreeValue, majorValue, perSem]);
+
+  const handleNextButtonClick = () => {
+    updateUser();
+    navigate('/Form3');
+  };
 
   if (loading) {
-    // Display loading indicator while user data is being fetched
-    return <div className="loading-screen">
-      <BeatLoader color="#7100FF" loading={true} size={15} />
-    </div>
+    return (
+      <div className="loading-screen">
+        <BeatLoader color="#7100FF" loading={true} size={15} />
+      </div>
+    );
   }
 
   return (
@@ -99,56 +163,82 @@ export default function Form2() {
                 <h5>Courses per Semester</h5>
                 <p>1. You are free to choose how many courses per semester you will take, this may increase the number of years taken for full completion.</p>
               </div>
-
-
             </div>
           </div>
           <div className=' grid-item formBox'>
             <div className='formHeader formSpace'>
-              <div >
               <div>
                 <h3>What are you Pursuing?</h3>
-
+                <div>
+                  <h4>Degree Type</h4>
+                  <Select
+                    value={study}
+                    onChange={(event) => {
+                      
+                      setStudy(event.target.value.replace(/\s+/g, ''));
+                    }}
+                    placeholder="Select a degree type"
+                    fullWidth
+                  >
+                    <MenuItem value="BachelorDegree">Bachelor Degree</MenuItem>
+                    <MenuItem value="BachelorDegreeWithHonours">Bachelor Degree With Honours</MenuItem>
+                  </Select>
+                </div>
               </div>
-              <div>
-                <h4>Select Program</h4>
-                <Select
-
-                  value={degreeValue}
-                  onChange={(event) => {
-                    setDegreeValue(event.target.value);
-                  }}
-                  placeholder="Choose a degree"
-                  fullWidth
-                >
-                  {bachelorDegrees.map((degree, index) => (
-                    <MenuItem key={index} value={degree}>{degree}</MenuItem>
-                  ))}
-                </Select>
+              <div className='formFields'>
+                <div>
+                  <h4>Select Program</h4>
+                  <Select
+                    value={degreeValue}
+                    onChange={(event) => {
+                      setDegreeValue(event.target.value);
+                    }}
+                    placeholder="Choose a degree"
+                    fullWidth
+                  >
+                    {bachelorDegrees.map((degree, index) => (
+                      <MenuItem key={index} value={degree}>{degree}</MenuItem>
+                    ))}
+                  </Select>
+                </div>
+                <div>
+                  <h4>Courses Per Semester</h4>
+                  <Select
+                    value={perSem}
+                    onChange={(event) => {
+                      setPerSem(event.target.value);
+                    }}
+                    placeholder="Select the number of courses"
+                    fullWidth
+                  >
+                    <MenuItem value={1}>1</MenuItem>
+                    <MenuItem value={2}>2</MenuItem>
+                    <MenuItem value={3}>3</MenuItem>
+                    <MenuItem value={4}>4</MenuItem>
+                  </Select>
+                </div>
+                {showMajorGroup && (
+                  <div id='majorGroup' >
+                    <h4>Select Major</h4>
+                    <Select
+                      autoWidth={true}
+                      value={majorValue}
+                      onChange={(event) => {
+                        setMajorValue(event.target.value);
+                      }}
+                      placeholder="Select a major"
+                      fullWidth
+                    >
+                      {majors.map((major, index) => (
+                        <MenuItem key={index} value={major}>{major}</MenuItem>
+                      ))}
+                    </Select>
+                  </div>
+                )}
               </div>
-              <div>
-                <h4>Courses Per Semester</h4>
-                <Select
-
-                  value={degreeValue}
-                  onChange={(event) => {
-                    setDegreeValue(event.target.value);
-                  }}
-                  placeholder="1"
-                  fullWidth
-                >
-                  <MenuItem value={1}>1</MenuItem>
-                  <MenuItem value={2}>2</MenuItem>
-                  <MenuItem value={3}>3</MenuItem>
-                  <MenuItem value={4}>4</MenuItem>
-
-                </Select>
-              </div>
-              </div>
-              <Link to="/Form1">
-                <Button variant={3} additionalClass='fatBtn'>Next: Choose Program</Button>
-              </Link>
-              
+              {degreeValue && majorValue && perSem && (
+                <Button variant={3} additionalClass='fatBtn' onClick={handleNextButtonClick}>Next: Choose Program</Button>
+              )}
             </div>
           </div>
         </div>
