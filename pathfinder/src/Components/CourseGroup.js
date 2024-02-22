@@ -14,14 +14,14 @@ const CourseGroup = ({ collectionName, documents, requirement = 0 }) => {
 
     // Determine if the requirement is satisfied
     setIsSatisfied(totalUnit === target);
-  }, [documents, requirement]);
+  }, [documents, requirement, documents.length]); // Add documents and documents.length to the dependency array
 
   return (
     <div>
       <Droppable droppableId={collectionName}>
         {(provided, snapshot) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            <div className='availableCourses card'>
+            <div className='availableCourses card' style={isSatisfied ? { borderColor: 'var(--Satisfied)' } : { borderColor: 'var(--Alert)'}}>
               <div className='reqType'>
                 <h5>{collectionName}</h5>
                 {isSatisfied ? (
@@ -32,7 +32,7 @@ const CourseGroup = ({ collectionName, documents, requirement = 0 }) => {
               </div>
               {/* Map each CourseCard to a Draggable component */}
               {documents.map((doc, index) => (
-                <Draggable key={doc.CourseCode} draggableId={doc.CourseCode} index={index}>
+                <Draggable key={doc.id} draggableId={doc.id} index={index}>
                   {(provided) => (
                     <div
                       ref={provided.innerRef}

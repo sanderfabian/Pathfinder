@@ -22,6 +22,8 @@ export default function Form3() {
   const [loadingElectiveMajorCourses, setLoadingElectiveMajorCourses] = useState(true);
   const [loadingMajorCourses, setLoadingMajorCourses] = useState(true);
   const [study, setStudy] = useState('');
+  const [electiveRequirement, setElectiveRequirement] = useState('');
+  const [electiveMajorRequirement, setElectiveMajorRequirement] = useState('');
   const [selectedCourses, setSelectedCourses] = useState([]);
 
   useEffect(() => {
@@ -63,7 +65,9 @@ export default function Form3() {
 
       if (majorDocSnapshot.exists()) {
         const majorData = majorDocSnapshot.data();
-        setMajorData(majorData); // Set the majorData state variable
+        setMajorData(majorData);
+        setElectiveRequirement(majorData.RequiredElectiveUnit)
+        setElectiveMajorRequirement(majorData.RequiredElectiveMajorUnit) // Set the majorData state variable
         // You can extract other major attributes here if needed
       } else {
         console.error(`Major document not found for ${major}`);
@@ -82,45 +86,66 @@ export default function Form3() {
         return coursesData;
       };
 
+      const addCourseTypeToCourses = async (coursesWithReferences, collectionName) => {
+        const coursesWithCourseType = [];
+        let courseType;
+        let mutable;
+        
+        switch (collectionName) {
+          case 'Core':
+            courseType = 'Core';
+            mutable = false;
+            break;
+          case 'Elective':
+            courseType = 'Elective';
+            mutable = true;
+            break;
+          case 'Elective Major':
+            courseType = 'Elective Major';
+            mutable = true;
+            break;
+          case 'Major':
+            courseType = 'Major';
+            mutable = false;
+            break;
+          default:
+            courseType = '';
+        }
+
+        for (const course of coursesWithReferences) {
+          const courseDocRef = doc(firestore, 'Course', course.id);
+          const courseDocSnapshot = await getDoc(courseDocRef);
+          if (courseDocSnapshot.exists()) {
+            const actualCourseData = { id: courseDocSnapshot.id, ...courseDocSnapshot.data(), CourseType: courseType, Mutable: mutable };
+            
+            coursesWithCourseType.push(actualCourseData);
+          }
+        }
+        return coursesWithCourseType;
+      };
+
       const coreCoursesWithReferences = await fetchCourses('CoreCourses');
-      const coreCoursesData = await fetchActualCourses(coreCoursesWithReferences);
+      const coreCoursesData = await addCourseTypeToCourses(coreCoursesWithReferences, 'Core');
       setCoreCourses(coreCoursesData);
       setLoadingCoreCourses(false);
 
       const electiveCoursesWithReferences = await fetchCourses('ElectiveCourses');
-      const electiveCoursesData = await fetchActualCourses(electiveCoursesWithReferences);
+      const electiveCoursesData = await addCourseTypeToCourses(electiveCoursesWithReferences, 'Elective');
       setElectiveCourses(electiveCoursesData);
       setLoadingElectiveCourses(false);
 
       const electiveMajorCoursesWithReferences = await fetchCourses('ElectiveMajorCourses');
-      const electiveMajorCoursesData = await fetchActualCourses(electiveMajorCoursesWithReferences);
+      const electiveMajorCoursesData = await addCourseTypeToCourses(electiveMajorCoursesWithReferences, 'Elective Major');
       setElectiveMajorCourses(electiveMajorCoursesData);
       setLoadingElectiveMajorCourses(false);
 
       const majorCoursesWithReferences = await fetchCourses('MajorCourses');
-      const majorCoursesData = await fetchActualCourses(majorCoursesWithReferences);
-
-
+      const majorCoursesData = await addCourseTypeToCourses(majorCoursesWithReferences, 'Major');
       setMajorCourses(majorCoursesData);
       setLoadingMajorCourses(false);
     } catch (error) {
       console.error('Error fetching subcollections:', error);
     }
-  };
-
-  const fetchActualCourses = async (coursesWithReferences) => {
-    const actualCoursesData = [];
-
-    for (const course of coursesWithReferences) {
-      const courseDocRef = doc(firestore, 'Course', course.Refer.id);
-      const courseDocSnapshot = await getDoc(courseDocRef);
-      if (courseDocSnapshot.exists()) {
-        const actualCourseData = { id: courseDocSnapshot.id, ...courseDocSnapshot.data() };
-        actualCoursesData.push(actualCourseData);
-      }
-    }
-
-    return actualCoursesData;
   };
 
 
@@ -169,6 +194,7 @@ export default function Form3() {
           updatedCourses.splice(destination.index, 0, draggedCourse);
           setElectiveCourses(updatedCourses);
         }
+        console.log('testing the core'+ coreCourses)
         break;
       case 'Elective Courses':
         draggedCourse = electiveCourses.find((course, index) => index === source.index);
@@ -182,6 +208,7 @@ export default function Form3() {
             updatedDestinationCourses = [...selectedCourses];
             updatedDestinationCourses.splice(destination.index, 0, draggedCourse);
             setSelectedCourses(updatedDestinationCourses);
+            setElectiveRequirement(electiveRequirement - draggedCourse.Unit)
           } else {
             // Update other groups similarly
           }
@@ -205,6 +232,7 @@ export default function Form3() {
             updatedDestinationCourses = [...selectedCourses];
             updatedDestinationCourses.splice(destination.index, 0, draggedCourse);
             setSelectedCourses(updatedDestinationCourses);
+            setElectiveMajorRequirement(electiveMajorRequirement - draggedCourse.Unit)
           } else {
             // Update other groups similarly
           }
@@ -215,6 +243,9 @@ export default function Form3() {
           updatedCourses.splice(destination.index, 0, draggedCourse);
           setElectiveMajorCourses(updatedCourses);
         }
+
+        
+        
         break;
       case 'Major Courses':
         draggedCourse = majorCourses.find((course, index) => index === source.index);
@@ -239,9 +270,76 @@ export default function Form3() {
           setMajorCourses(updatedCourses);
         }
         break;
+      case 'selection':
+        draggedCourse = selectedCourses.find((course, index) => index === source.index);
+        if (sourceGroup !== destinationGroup){
+
+
+          const updatedSourceCourses = [...selectedCourses];
+          
+          let updatedDestinationCourses;
+          console.log(destinationGroup);
+          switch(destinationGroup){
+            case 'Core Courses':
+              if(draggedCourse.CourseType==="Core"){
+                updatedSourceCourses.splice(source.index, 1);
+                setSelectedCourses(updatedSourceCourses);
+                updatedDestinationCourses = [...coreCourses];
+                updatedDestinationCourses.splice(destination.index, 0, draggedCourse);
+                setCoreCourses(updatedDestinationCourses);
+              }
+              else{
+                
+              }
+              break;
+              case 'Elective Courses':
+                if(draggedCourse.CourseType==="Elective"){
+                  updatedSourceCourses.splice(source.index, 1);
+                setSelectedCourses(updatedSourceCourses);
+                  updatedDestinationCourses = [...electiveCourses];
+                  updatedDestinationCourses.splice(destination.index, 0, draggedCourse);
+                  setElectiveCourses(updatedDestinationCourses);
+                  setElectiveRequirement(electiveRequirement+ draggedCourse.Unit)
+                }
+                else{
+                 
+                }
+                break;
+                case 'Elective Major Courses':
+                  if(draggedCourse.CourseType==="Elective Major"){
+                    updatedSourceCourses.splice(source.index, 1);
+                setSelectedCourses(updatedSourceCourses);
+                    updatedDestinationCourses = [...electiveMajorCourses];
+                    updatedDestinationCourses.splice(destination.index, 0, draggedCourse);
+                    setElectiveMajorCourses(updatedDestinationCourses);
+                    setElectiveMajorRequirement(electiveMajorRequirement + draggedCourse.Unit)
+                  }
+                  else{
+                  
+                  }
+                  break;
+                  case 'Major Courses':
+                    if(draggedCourse.CourseType==="Major"){
+                      updatedSourceCourses.splice(source.index, 1);
+                setSelectedCourses(updatedSourceCourses);
+                      updatedDestinationCourses = [...majorCourses];
+                      updatedDestinationCourses.splice(destination.index, 0, draggedCourse);
+                      setMajorCourses(updatedDestinationCourses);
+                    }
+                    else{
+                      
+                    }
+                    break;
+              
+          }
+
+
+
+
+        }
+        break;
     }
-    console.log(sourceGroup);
-    console.log(draggedCourse);
+   
 
     // Update state based on drag and drop
 
@@ -281,7 +379,7 @@ export default function Form3() {
               <Droppable droppableId="electiveCourses">
                 {(provided) => (
                   <div ref={provided.innerRef} {...provided.droppableProps}>
-                    <CourseGroup collectionName="Elective Courses" documents={electiveCourses} requirement={majorData?.RequiredElectiveUnit} />
+                    <CourseGroup collectionName="Elective Courses" documents={electiveCourses} requirement={electiveRequirement} />
                     {provided.placeholder}
                   </div>
                 )}
@@ -289,7 +387,7 @@ export default function Form3() {
               <Droppable droppableId="electiveMajorCourses">
                 {(provided) => (
                   <div ref={provided.innerRef} {...provided.droppableProps}>
-                    <CourseGroup collectionName="Elective Major Courses" documents={electiveMajorCourses} requirement={majorData?.RequiredElectiveMajorUnit} />
+                    <CourseGroup collectionName="Elective Major Courses" documents={electiveMajorCourses} requirement={electiveMajorRequirement} />
                     {provided.placeholder}
                   </div>
                 )}
@@ -304,10 +402,15 @@ export default function Form3() {
               </Droppable>
             </div>
 
-            <div className='grid-item scrollable-div cardHolder '>
+            <div className='grid-item scrollable-div cardHolder dropGroup'>
               <Droppable droppableId='selection'>
                 {(provided) => (
-                  <div className='bobby' ref={provided.innerRef} {...provided.droppableProps}>
+                  <div className='dropZone' ref={provided.innerRef} {...provided.droppableProps}>
+                    {selectedCourses.length === 0 ? (
+                      <div className='dropZoneText'>
+                        <h3 >Drop Your choices here</h3>
+                      </div>
+                    ) : null}
                     {selectedCourses.map((doc, index) => (
                       <Draggable key={doc.id} draggableId={doc.id} index={index}>
                         {(provided) => (
@@ -321,6 +424,7 @@ export default function Form3() {
                                 courseCode={doc.CourseCode}
                                 courseName={doc.Title}
                                 units={doc.Unit}
+                                courseType={doc.CourseType}
                               />
                             </div>
                           </div>
@@ -331,6 +435,7 @@ export default function Form3() {
                   </div>
                 )}
               </Droppable>
+
             </div>
 
           </div>
