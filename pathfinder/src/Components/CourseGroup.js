@@ -21,11 +21,11 @@ const CourseGroup = ({ collectionName, documents, requirement = 0 }) => {
       <Droppable droppableId={collectionName}>
         {(provided, snapshot) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            <div className='availableCourses card' style={isSatisfied ? { borderColor: 'var(--Satisfied)' } : { borderColor: 'var(--Alert)'}}>
+            <div className='availableCourses card' style={isSatisfied ? {  border:'solid var(--Tertiary)' } : { borderColor: 'var(--Alert)'}}>
               <div className='reqType'>
                 <h5>{collectionName}</h5>
                 {isSatisfied ? (
-                  <h5 style={{ color: 'var(--Satisfied)' }}>Satisfied</h5>
+                  <h5 style={{ color: 'var(--Tertiary)' }}>Satisfied</h5>
                 ) : (
                   <h5 style={{ color: 'var(--Alert)' }}>Units required: {requirement}</h5>
                 )}

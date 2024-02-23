@@ -138,16 +138,25 @@ gap: 10px!important;
 
 /* DND group*/
 
+
+.dropGrid{
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border: none;
+}
 .gridForm3{
     display: grid;
     gap: 10px;
     min-height: inherit;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: min-content 1fr min-content ;
+    grid-template-rows: 1fr;
     position: relative;
     margin: auto;
     flex-grow: 1;
-    margin-top: 10px;
+    margin-top: 5px;
+    width: 100%;
 }
 
 
@@ -197,26 +206,27 @@ gap: 10px!important;
     background-color: transparent;
     justify-content: start;
     box-shadow: none;
-    border: solid #5555551c 3px;
+    border: dashed #5555551c 3px;
 }
 
 
 .cardHolder{
-    max-height: 75vh;
+    max-height: 73.5vh;
     overflow-x: hidden;
     overflow-y: scroll;
     border: none;
-    padding:5px;
+    
     display: flex;
     flex-direction: column;
     gap: 10px;
-    grid-row-start: 2;
-    background-color: var(--Grey);
+    padding-right: 5px;
+    
     
 }
 
 .cardHolder h5,
-.cardHolder h6{
+.cardHolder h6,
+.showCore h4{
     user-select: none;
 }
 
@@ -255,14 +265,21 @@ gap: 10px!important;
     flex-direction: column;
     min-height: 200px;
     border-radius: 10px;
-   
+    border: #55555528 dashed 3px;
+    border-radius: 10PX;
+    background-color: var(--Secondary);
+    color: #55555528;
     flex-grow: 1;
+    height: auto;
+    max-height: 60.5vh;
+    overflow-y: scroll;
+    padding: 10px;
   }
 
   .dropGroup{
-    background-color: var(--Secondary);
-    border: #55555528 dashed 3px;
-    color: #55555528;
+    background-color:transparent;
+  
+    
   }
 
 .dropZoneText{
@@ -271,6 +288,7 @@ gap: 10px!important;
     flex-grow: 1;
     justify-content: center;
     align-items: center;
+    
 }
 
   /* Style scrollbar for Chrome, Safari, and Opera */
@@ -297,3 +315,60 @@ gap: 10px!important;
   .scrollable-div::-webkit-scrollbar-thumb:hover {
     background: #555; /* Color of the handle when hovered */
   }
+
+  
+  .compulsory{
+    gap:5px;
+    color: black!important;
+    display: flex;
+    flex-direction: column;
+    text-align: start;
+    flex-grow: 1;
+    background-color: var(--Grey);
+    padding: 10px;
+    border-radius: 10px;
+
+    max-height: 60.5vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    border: none;
+    
+    display: flex;
+    flex-direction: column;
+    
+  }
+
+  .showCore{
+    display: flex;
+    padding: 10px;
+    border: 3px solid var(--Border);
+    /**box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;*/
+    border-radius: 10px;
+    cursor: pointer;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+
+  .courseChoice{
+    border: none;
+   grid-column-start: 1;
+   grid-column-end: 2;
+   grid-row-start: 1;
+   
+   display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .form3Header{
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 10px;
+    text-align: start;
+  }
+
+ 

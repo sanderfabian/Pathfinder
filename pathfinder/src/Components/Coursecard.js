@@ -9,7 +9,7 @@ export default function Coursecard({ courseCode, courseName, units ,courseType})
           <h5 >{courseName}</h5>
           <h6 style={{ color: 'var(--FontDark)' }}>{courseType}</h6>
         </div>
-        <h5 style={{ color: 'var(--FontDark)' }}>{units} units</h5>
+        <h5 style={{ color: 'var(--FontDark)' }}>{units ? `${units} units` : ''}</h5>
         
       </div>
     );

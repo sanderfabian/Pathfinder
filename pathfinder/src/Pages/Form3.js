@@ -7,6 +7,9 @@ import CourseGroup from '../Components/CourseGroup';
 import { useUserAuth } from '../Components/AuthContext';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Coursecard from '../Components/Coursecard';
+import Triangle from '../Assets/Images/Triangle.svg';
+import Button from '../Components/Button';
+import Curious from '../Assets/Images/curious.png'
 
 
 export default function Form3() {
@@ -25,6 +28,21 @@ export default function Form3() {
   const [electiveRequirement, setElectiveRequirement] = useState('');
   const [electiveMajorRequirement, setElectiveMajorRequirement] = useState('');
   const [selectedCourses, setSelectedCourses] = useState([]);
+  const [showCompulsory, setShowCompulsory] = useState(false);
+  const [showCompulsoryHeader, setShowCompulsoryHeader] = useState('Show Compulsory Header');
+  const [showCompulsoryRotate, setShowCompulsoryRotate] = useState('90deg');
+
+const toggleView = () => {
+  setShowCompulsory(!showCompulsory);
+  if (showCompulsory== true){
+    setShowCompulsoryHeader('Show Compulsory Courses')
+    setShowCompulsoryRotate('90deg')
+  }
+  else{
+    setShowCompulsoryHeader('Hide Compulsory Courses')
+    setShowCompulsoryRotate('-90deg')
+  }
+};
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,7 +108,7 @@ export default function Form3() {
         const coursesWithCourseType = [];
         let courseType;
         let mutable;
-        
+
         switch (collectionName) {
           case 'Core':
             courseType = 'Core';
@@ -117,7 +135,7 @@ export default function Form3() {
           const courseDocSnapshot = await getDoc(courseDocRef);
           if (courseDocSnapshot.exists()) {
             const actualCourseData = { id: courseDocSnapshot.id, ...courseDocSnapshot.data(), CourseType: courseType, Mutable: mutable };
-            
+
             coursesWithCourseType.push(actualCourseData);
           }
         }
@@ -149,7 +167,7 @@ export default function Form3() {
   };
 
 
-  // Form3.js
+  // DND
 
   const onDragEnd = (result) => {
     const { source, destination, draggableId } = result;
@@ -172,30 +190,7 @@ export default function Form3() {
 
     // Find dragged course
     switch (sourceGroup) {
-      case 'Core Courses':
-        draggedCourse = coreCourses.find((course, index) => index === source.index);
-        if (sourceGroup !== destinationGroup) {
-          // Remove course from source group
-          const updatedSourceCourses = [...coreCourses];
-          updatedSourceCourses.splice(source.index, 1);
-          setCoreCourses(updatedSourceCourses);
-          let updatedDestinationCourses;
-          if (destinationGroup === 'selection') {
-            updatedDestinationCourses = [...selectedCourses];
-            updatedDestinationCourses.splice(destination.index, 0, draggedCourse);
-            setSelectedCourses(updatedDestinationCourses);
-          } else {
-            // Update other groups similarly
-          }
-        } else {
-          // If the course is moved within the same group, update state accordingly
-          const updatedCourses = [...electiveCourses];
-          updatedCourses.splice(source.index, 1);
-          updatedCourses.splice(destination.index, 0, draggedCourse);
-          setElectiveCourses(updatedCourses);
-        }
-        console.log('testing the core'+ coreCourses)
-        break;
+
       case 'Elective Courses':
         draggedCourse = electiveCourses.find((course, index) => index === source.index);
         if (sourceGroup !== destinationGroup) {
@@ -244,93 +239,49 @@ export default function Form3() {
           setElectiveMajorCourses(updatedCourses);
         }
 
-        
-        
+
+
         break;
-      case 'Major Courses':
-        draggedCourse = majorCourses.find((course, index) => index === source.index);
-        if (sourceGroup !== destinationGroup) {
-          // Remove course from source group
-          const updatedSourceCourses = [...majorCourses];
-          updatedSourceCourses.splice(source.index, 1);
-          setMajorCourses(updatedSourceCourses);
-          let updatedDestinationCourses;
-          if (destinationGroup === 'selection') {
-            updatedDestinationCourses = [...selectedCourses];
-            updatedDestinationCourses.splice(destination.index, 0, draggedCourse);
-            setSelectedCourses(updatedDestinationCourses);
-          } else {
-            // Update other groups similarly
-          }
-        } else {
-          // If the course is moved within the same group, update state accordingly
-          const updatedCourses = [...majorCourses];
-          updatedCourses.splice(source.index, 1);
-          updatedCourses.splice(destination.index, 0, draggedCourse);
-          setMajorCourses(updatedCourses);
-        }
-        break;
+
       case 'selection':
         draggedCourse = selectedCourses.find((course, index) => index === source.index);
-        if (sourceGroup !== destinationGroup){
+        if (sourceGroup !== destinationGroup) {
 
 
           const updatedSourceCourses = [...selectedCourses];
-          
+
           let updatedDestinationCourses;
           console.log(destinationGroup);
-          switch(destinationGroup){
-            case 'Core Courses':
-              if(draggedCourse.CourseType==="Core"){
+          switch (destinationGroup) {
+
+            case 'Elective Courses':
+              if (draggedCourse.CourseType === "Elective") {
                 updatedSourceCourses.splice(source.index, 1);
                 setSelectedCourses(updatedSourceCourses);
-                updatedDestinationCourses = [...coreCourses];
+                updatedDestinationCourses = [...electiveCourses];
                 updatedDestinationCourses.splice(destination.index, 0, draggedCourse);
-                setCoreCourses(updatedDestinationCourses);
+                setElectiveCourses(updatedDestinationCourses);
+                setElectiveRequirement(electiveRequirement + draggedCourse.Unit)
               }
-              else{
-                
+              else {
+
               }
               break;
-              case 'Elective Courses':
-                if(draggedCourse.CourseType==="Elective"){
-                  updatedSourceCourses.splice(source.index, 1);
+            case 'Elective Major Courses':
+              if (draggedCourse.CourseType === "Elective Major") {
+                updatedSourceCourses.splice(source.index, 1);
                 setSelectedCourses(updatedSourceCourses);
-                  updatedDestinationCourses = [...electiveCourses];
-                  updatedDestinationCourses.splice(destination.index, 0, draggedCourse);
-                  setElectiveCourses(updatedDestinationCourses);
-                  setElectiveRequirement(electiveRequirement+ draggedCourse.Unit)
-                }
-                else{
-                 
-                }
-                break;
-                case 'Elective Major Courses':
-                  if(draggedCourse.CourseType==="Elective Major"){
-                    updatedSourceCourses.splice(source.index, 1);
-                setSelectedCourses(updatedSourceCourses);
-                    updatedDestinationCourses = [...electiveMajorCourses];
-                    updatedDestinationCourses.splice(destination.index, 0, draggedCourse);
-                    setElectiveMajorCourses(updatedDestinationCourses);
-                    setElectiveMajorRequirement(electiveMajorRequirement + draggedCourse.Unit)
-                  }
-                  else{
-                  
-                  }
-                  break;
-                  case 'Major Courses':
-                    if(draggedCourse.CourseType==="Major"){
-                      updatedSourceCourses.splice(source.index, 1);
-                setSelectedCourses(updatedSourceCourses);
-                      updatedDestinationCourses = [...majorCourses];
-                      updatedDestinationCourses.splice(destination.index, 0, draggedCourse);
-                      setMajorCourses(updatedDestinationCourses);
-                    }
-                    else{
-                      
-                    }
-                    break;
-              
+                updatedDestinationCourses = [...electiveMajorCourses];
+                updatedDestinationCourses.splice(destination.index, 0, draggedCourse);
+                setElectiveMajorCourses(updatedDestinationCourses);
+                setElectiveMajorRequirement(electiveMajorRequirement + draggedCourse.Unit)
+              }
+              else {
+
+              }
+              break;
+
+
           }
 
 
@@ -339,7 +290,7 @@ export default function Form3() {
         }
         break;
     }
-   
+
 
     // Update state based on drag and drop
 
@@ -365,17 +316,17 @@ export default function Form3() {
       {/* Navbar and form structure */}
       <Navbar />
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className='formHolder'>
+        <div className='formHolder form3'>
           <div className='gridForm gridForm3'>
-            <div className='grid-item scrollable-div cardHolder'>
-              <Droppable droppableId="coreCourses">
-                {(provided) => (
-                  <div ref={provided.innerRef} {...provided.droppableProps}>
-                    <CourseGroup collectionName="Core Courses" documents={coreCourses} />
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
+            <div className='grid-item courseChoice '>
+              <div className='form3Header'>
+                <div>
+            <h4>Choose your Electives</h4>
+            <p>Satisfy your unit requirement by dragging your <br></br>electives into the drop zone to the left.</p>
+            </div>
+            <img src={Curious} height={50}/>
+            </div>
+              <div className='scrollable-div cardHolder'>
               <Droppable droppableId="electiveCourses">
                 {(provided) => (
                   <div ref={provided.innerRef} {...provided.droppableProps}>
@@ -392,52 +343,70 @@ export default function Form3() {
                   </div>
                 )}
               </Droppable>
-              <Droppable droppableId="majorCourses">
-                {(provided) => (
-                  <div ref={provided.innerRef} {...provided.droppableProps}>
-                    <CourseGroup collectionName="Major Courses" documents={majorCourses} />
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </div>
 
-            <div className='grid-item scrollable-div cardHolder dropGroup'>
-              <Droppable droppableId='selection'>
-                {(provided) => (
-                  <div className='dropZone' ref={provided.innerRef} {...provided.droppableProps}>
-                    {selectedCourses.length === 0 ? (
-                      <div className='dropZoneText'>
-                        <h3 >Drop Your choices here</h3>
-                      </div>
-                    ) : null}
-                    {selectedCourses.map((doc, index) => (
-                      <Draggable key={doc.id} draggableId={doc.id} index={index}>
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                          >
-                            <div key={doc.id}>
-                              <Coursecard
-                                courseCode={doc.CourseCode}
-                                courseName={doc.Title}
-                                units={doc.Unit}
-                                courseType={doc.CourseType}
-                              />
+            </div>
+            </div>
+            <div className='grid-item scrollable-div dropGrid dropGroup'>
+              <div className='showCore' onClick={toggleView}>
+                  <h4>{showCompulsoryHeader}</h4>
+                  <img src={Triangle} height={12} width={12} style={{ transform: `rotate(${showCompulsoryRotate})` }} />
+              </div>
+              {showCompulsory ? (
+                <div className='scrollable-div cardHolder compulsory'>
+                  <h5 style={{ color: "var(--Teriary)" }} >Core</h5>
+                  {coreCourses.map((doc, index) => (
+                    <Coursecard
+                      key={doc.id}
+                      courseCode={doc.CourseCode}
+                      courseName={doc.Title}
+                    />
+                  ))}
+                  <h5 style={{ color: "var(--Teriary)" }} >Major</h5>
+                  {majorCourses.map((doc, index) => (
+                    <Coursecard
+                      key={doc.id}
+                      courseCode={doc.CourseCode}
+                      courseName={doc.Title}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <Droppable droppableId='selection'>
+                  {(provided) => (
+                    <div className='dropZone scrollable-div' ref={provided.innerRef} {...provided.droppableProps}>
+                      {selectedCourses.length === 0 ? (
+                        <div className='dropZoneText'>
+                          <h3 >Drop Your choices here</h3>
+                        </div>
+                      ) : null}
+                      {selectedCourses.map((doc, index) => (
+                        <Draggable key={doc.id} draggableId={doc.id} index={index}>
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <div key={doc.id}>
+                                <Coursecard
+                                  courseCode={doc.CourseCode}
+                                  courseName={doc.Title}
+                                  units={doc.Unit}
+                                  courseType={doc.CourseType}
+                                />
+                              </div>
                             </div>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              )}
+              <Button variant={2} additionalClass='fatBtn'>Generate Pathway!</Button>
             </div>
-
+            
           </div>
         </div>
       </DragDropContext>
