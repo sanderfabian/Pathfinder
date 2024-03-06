@@ -23,10 +23,9 @@ function Login() {
       navigate('/Dashboard');
     } catch (error) {
 
-      if(error.message==="Firebase: Error (auth/invalid-email)."){
-        error.message = "Invalid Email"
-      }
-      setError(error.message);
+      
+      
+      setError('Invalid E-mail or Password');
     }
   };
 

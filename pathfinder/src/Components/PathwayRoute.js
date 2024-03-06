@@ -25,7 +25,7 @@ function PathwayRoute({ children }) {
     return children;
   } else {
     // If user does not have pathway, redirect to form1
-    return <Navigate to="/form3" />;
+    return <Navigate to="/form1" />;
   }
 }
 

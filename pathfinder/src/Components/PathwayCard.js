@@ -1,52 +1,39 @@
 import React, { useState } from 'react';
-import { collection, getDoc, getDocs, doc } from 'firebase/firestore';
-import BeatLoader from 'react-spinners/BeatLoader'; // Import BeatLoader
+import BeatLoader from 'react-spinners/BeatLoader';
 import { auth, firestore } from '../firebase';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import CourseGroupPathway from './CourseGroupPathway';
+import PointDown from '../Assets/Images/pointDown.svg'
+import Lottie from 'react-lottie';
 import '../Styles/Dashboard.css';
+import animationData from '../Assets/Animations/alert.json';
 
-export default function PathwayCard({ courseCode, courseName, mutable, courseType }) {
+
+export default function PathwayCard({ courseCode, courseName, mutable, courseType, electiveCourses, electiveMajorCourses, errMsg }) {
   const [expanded, setExpanded] = useState(false);
   const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(false); // State to track loading
+  const [loading, setLoading] = useState(false);
 
   const handleCardClick = async () => {
     const user = auth.currentUser;
     if (mutable && user) {
       setExpanded(!expanded);
       if (!expanded) {
+        setLoading(true);
         try {
-          setLoading(true); // Set loading to true when fetching courses starts
-          const userDocRef = doc(firestore, 'User', user.uid);
-          const userDocSnapshot = await getDoc(userDocRef);
-          if (userDocSnapshot.exists()) {
-            const userData = userDocSnapshot.data();
-            const { Program, Major, Study } = userData;
-            if (Program && Major && Study) {
-              const collectionName = `${courseType}Courses`;
-              const coursesRef = collection(doc(firestore, Study, Program, 'Major', Major), collectionName);
-              const snapshot = await getDocs(coursesRef);
-              const fetchedCourses = [];
-              for (const doc of snapshot.docs) {
-                const courseDocSnapshot = await getDoc(doc.data().Refer);
-                if (courseDocSnapshot.exists()) {
-                  const courseData = { id: doc.id, ...courseDocSnapshot.data() };
-                  fetchedCourses.push(courseData);
-                } else {
-                  console.error(`Course document not found for ID "${doc.id}"`);
-                }
-              }
-              setCourses(fetchedCourses);
-            } else {
-              console.error('Program, Major, or Study is missing in the user document');
-            }
+          let fetchedCourses;
+          if (courseType === 'Elective') {
+            fetchedCourses = electiveCourses;
+          } else if (courseType === 'Elective Major') {
+            fetchedCourses = electiveMajorCourses;
           } else {
-            console.error(`User document not found for UID "${user.uid}"`);
+            fetchedCourses = [];
           }
+          setCourses(fetchedCourses);
         } catch (error) {
           console.error('Error fetching courses:', error);
         } finally {
-          setLoading(false); // Set loading to false when fetching courses completes
+          setLoading(false);
         }
       }
     }
@@ -54,31 +41,22 @@ export default function PathwayCard({ courseCode, courseName, mutable, courseTyp
 
   return (
     <div className='pathwayBlock'>
-      <div className='pathwayCard' style={{ border: mutable ? '3px dashed var(--Border)' : '3px solid var(--Grey)' }}>
-        <div onClick={handleCardClick}>
-          <h6 style={{ color: 'var(--Border)' }}>{courseCode}</h6>
-          <h5>{courseName}</h5>
-          <h6 style={{ color: 'var(--FontDark)' }}>{courseType}</h6>
-        </div>
-      </div>
-      {expanded && mutable && (
-        <div className="modal-overlay" onClick={() => setExpanded(false)}>
-          <div className="modal">
-            <div className="modal-content">
-              {loading ? ( // Display BeatLoader if loading is true
-                <BeatLoader color={'var(--Tertiary)'} loading={loading} />
-              ) : (
-                <>
-                  <h3>Choose a replacement</h3>
-                  <div className="expandedContent scrollable-div">
-                    <CourseGroupPathway documents={courses} />
-                  </div>
-                </>
-              )}
+      <div className='pathwayCard' style={{ border: mutable ? '3px solid var(--Alert)' : '3px solid var(--Border)', cursor: mutable ? 'pointer' : 'auto' }}>
+        <div className='courseDetails' onClick={handleCardClick}>
+          <h5 style={{ color: 'var(--Tertiary)' }}>{courseType}</h5>
+          {mutable && (
+            <div style={{ backgroundColor: 'var(--Grey)', padding: 5, borderRadius: '10px', border: 'solid 3px #48484823',marginTop:'5px',marginBottom:'5px' }}>
+              <Lottie options={{ animationData: animationData }} width={30} height={30} />
+              <h5 style={{ color: 'var(--Alert)' }}>{errMsg}</h5>
             </div>
+          )}
+          <div>
+            <h4 style={{ color: 'var(--FontDark)' }}>{courseName}</h4>
+            <h5 style={{ color: 'var(--Border)' }}>{courseCode}</h5>
           </div>
         </div>
-      )}
+      </div>
     </div>
+
   );
 }

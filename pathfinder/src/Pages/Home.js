@@ -75,7 +75,7 @@ export default function Home() {
             <img src={Pointer} height={30} />
           </div>
           
-            i stopped here
+            Add testimonials here
           </div>
         </div>
       </div>

@@ -25,21 +25,31 @@ export default function Form2() {
   const [majors, setMajors] = useState([]);
   const [showMajorGroup, setShowMajorGroup] = useState(false);
   const [study, setStudy] = useState('');
+  const [isProgramLoading, setIsProgramLoading] = useState(false);
 
   useEffect(() => {
     const fetchDegrees = async () => {
       try {
+        setIsProgramLoading(true);
         const q = collection(firestore, study);
         const querySnapshot = await getDocs(q);
         const degrees = querySnapshot.docs.map(doc => doc.data().Title);
         setBachelorDegrees(degrees);
+        setIsProgramLoading(false);
+  
+        // Reset other fields when degree type changes
+        setDegreeValue('');
+        setPerSem('');
+        setMajorValue('');
+        setShowMajorGroup(false);
       } catch (error) {
         console.error('Error fetching degrees:', error);
       }
     };
   
     fetchDegrees();
-  }, [study]); // Add study as a dependency
+  }, [study]);
+  
   
 
   const updateUser = async (userId, majorValue, degreeValue, perSem) => {
@@ -167,14 +177,17 @@ export default function Form2() {
           </div>
           <div className=' grid-item formBox'>
             <div className='formHeader formSpace'>
+              
+              <div className='formFields'>
               <div>
                 <h3>What are you Pursuing?</h3>
-                <div>
+                
+              </div>
+              <div>
                   <h4>Degree Type</h4>
                   <Select
                     value={study}
                     onChange={(event) => {
-                      
                       setStudy(event.target.value.replace(/\s+/g, ''));
                     }}
                     placeholder="Select a degree type"
@@ -184,60 +197,65 @@ export default function Form2() {
                     <MenuItem value="BachelorDegreeWithHonours">Bachelor Degree With Honours</MenuItem>
                   </Select>
                 </div>
-              </div>
-              <div className='formFields'>
-                <div>
-                  <h4>Select Program</h4>
-                  <Select
-                    value={degreeValue}
-                    onChange={(event) => {
-                      setDegreeValue(event.target.value);
-                    }}
-                    placeholder="Choose a degree"
-                    fullWidth
-                  >
-                    {bachelorDegrees.map((degree, index) => (
-                      <MenuItem key={index} value={degree}>{degree}</MenuItem>
-                    ))}
-                  </Select>
-                </div>
-                <div>
-                  <h4>Courses Per Semester</h4>
-                  <Select
-                    value={perSem}
-                    onChange={(event) => {
-                      setPerSem(event.target.value);
-                    }}
-                    placeholder="Select the number of courses"
-                    fullWidth
-                  >
-                    <MenuItem value={1}>1</MenuItem>
-                    <MenuItem value={2}>2</MenuItem>
-                    <MenuItem value={3}>3</MenuItem>
-                    <MenuItem value={4}>4</MenuItem>
-                  </Select>
-                </div>
-                {showMajorGroup && (
-                  <div id='majorGroup' >
-                    <h4>Select Major</h4>
-                    <Select
-                      autoWidth={true}
-                      value={majorValue}
-                      onChange={(event) => {
-                        setMajorValue(event.target.value);
-                      }}
-                      placeholder="Select a major"
-                      fullWidth
-                    >
-                      {majors.map((major, index) => (
-                        <MenuItem key={index} value={major}>{major}</MenuItem>
-                      ))}
-                    </Select>
-                  </div>
+                {!isProgramLoading && (
+                  <>
+                    <div>
+                      
+                      <h4>Select Program</h4>
+                      <Select
+                        value={degreeValue}
+                        onChange={(event) => {
+                          setDegreeValue(event.target.value);
+                        }}
+                        placeholder="Choose a degree"
+                        fullWidth
+                      >
+                        {bachelorDegrees.map((degree, index) => (
+                          <MenuItem key={index} value={degree}>{degree}</MenuItem>
+                        ))}
+                      </Select>
+                    </div>
+                    <div>
+                      <h4>Courses Per Semester</h4>
+                      <Select
+                        value={perSem}
+                        onChange={(event) => {
+                          setPerSem(event.target.value);
+                        }}
+                        placeholder="Select the number of courses"
+                        fullWidth
+                      >
+                        <MenuItem value={1}>1</MenuItem>
+                        <MenuItem value={2}>2</MenuItem>
+                        <MenuItem value={3}>3</MenuItem>
+                        <MenuItem value={4}>4</MenuItem>
+                      </Select>
+                    </div>
+                    {showMajorGroup && (
+                      <div id='majorGroup' >
+                        <h4>Select Major</h4>
+                        <Select
+                          autoWidth={true}
+                          value={majorValue}
+                          onChange={(event) => {
+                            setMajorValue(event.target.value);
+                          }}
+                          placeholder="Select a major"
+                          fullWidth
+                        >
+                          {majors.map((major, index) => (
+                            <MenuItem key={index} value={major}>{major}</MenuItem>
+                          ))}
+                        </Select>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
               {degreeValue && majorValue && perSem && (
+                <div className='formBottomBtn'>
                 <Button variant={3} additionalClass='fatBtn' onClick={handleNextButtonClick}>Next: Choose Program</Button>
+                </div>
               )}
             </div>
           </div>
