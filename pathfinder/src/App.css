@@ -1,7 +1,7 @@
 :root {
   --Background: #f9f9f9;
   --Border: #C9A2FF;
-  --Secondary: #C0D8E1;
+  --Secondary: rgb(192, 216, 225);
   --Tertiary: #7100FF;
   --Alert: #F36565;
   --Satisfied:#52f943;

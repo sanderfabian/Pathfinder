@@ -72,7 +72,7 @@ export default function Home() {
             <div className='testimonialHolder'>  
           <div className='testimonialHeader'>
             <h4>Testimonials</h4>
-            <img src={Pointer} height={30} />
+            <img src={Pointer} alt='' height={30} />
           </div>
           
             Add testimonials here

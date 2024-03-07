@@ -2,7 +2,7 @@ import React from 'react';
 import { Droppable, Draggable } from 'react-beautiful-dnd';
 import PathwayCard from './PathwayCard';
 
-function Semester({ semesterData, electiveCourses, electiveMajorCourses }) {
+function Semester({ semesterData, electiveCourses, electiveMajorCourses, eventHandler }) {
   const maxCards = 4; // Maximum number of cards per semester
 
   return (
@@ -51,7 +51,7 @@ function Semester({ semesterData, electiveCourses, electiveMajorCourses }) {
             ))}
             {/* Render placeholder squares */}
             {[...Array(maxCards - semesterData.courses.length)].map((_, index) => (
-              <div key={index} className="placeholder-square draggablePathwayCard" style={{ border: "3px dashed", borderRadius: 10 }}>
+              <div key={index} onClick={eventHandler} className="placeholder-square draggablePathwayCard" style={{ border: "3px dashed", borderRadius: 10 }}>
                 <h1>+</h1>
               </div>
             ))}

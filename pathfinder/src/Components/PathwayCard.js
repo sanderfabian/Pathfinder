@@ -41,7 +41,7 @@ export default function PathwayCard({ courseCode, courseName, mutable, courseTyp
 
   return (
     <div className='pathwayBlock'>
-      <div className='pathwayCard' style={{ border: mutable ? '3px solid var(--Alert)' : '3px solid var(--Border)', cursor: mutable ? 'pointer' : 'auto' }}>
+      <div className='pathwayCard' style={{ border: mutable ? '3px solid var(--Alert)' : '3px solid var(--Border)', cursor: 'grab' }}>
         <div className='courseDetails' onClick={handleCardClick}>
           <h5 style={{ color: 'var(--Tertiary)' }}>{courseType}</h5>
           {mutable && (
