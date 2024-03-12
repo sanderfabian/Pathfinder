@@ -102,14 +102,8 @@ export default function Form2() {
           const userDocRef = doc(firestore, 'User', user.uid);
           const userDocSnapshot = await getDoc(userDocRef);
           const cleanedDegreeValue = degreeValue.replace(/\s+/g, '');
-          let cleanedMajor = '';
+          const cleanedMajor = majorValue.replace(/\s+/g, '');
 
-          const match = majorValue.match(/Majoring\s+in\s+(.*)/i);
-          if (match && match.length > 1) {
-            cleanedMajor = match[1].replace(/\s+/g, '');
-          } else {
-            // handle error condition
-          }
 
           if (userDocSnapshot.exists()) {
             await updateDoc(userDocRef, {

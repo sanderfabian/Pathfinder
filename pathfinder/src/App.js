@@ -4,6 +4,7 @@ import Home from './Pages/Home';
 import Login from './Pages/Login';
 import Dashboard from './Pages/Dashboard';
 import Form1 from './Pages/Form1';
+import Form from './Pages/Form';
 import './App.css';
 import Form2 from './Pages/Form2';
 import Form3 from './Pages/Form3';
@@ -35,6 +36,10 @@ function App() {
             <Route
               path="/form2"
               element={<ProtectedRoute><Form2/></ProtectedRoute>}
+            ></Route>
+            <Route
+              path="/form"
+              element={<Form/>}
             ></Route>
             <Route
               path="/form3"

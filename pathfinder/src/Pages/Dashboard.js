@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc , updateDoc, deleteDoc, setDoc} from 'firebase/firestore';
 import { auth, firestore } from '../firebase';
 import Navbar from '../Components/Navbar';
 import { BeatLoader } from 'react-spinners';
@@ -32,6 +32,7 @@ function Dashboard() {
   const [isChecked, setIsChecked] = useState(false);
   const [isElectiveSatisfied, setIsElectiveSatisfied] = useState(false);
   const [isElectiveMajorSatisfied, setIsElectiveMajorSatisfied] = useState(false);
+  
  
 
   useEffect(() => {
@@ -128,7 +129,7 @@ function Dashboard() {
 
         return coursesData;
       };
-
+      
       const addCourseTypeToCourses = async (coursesWithReferences, collectionName) => {
         const coursesWithCourseType = [];
         let courseType;
@@ -175,6 +176,9 @@ function Dashboard() {
     } catch (error) {
       console.error('Error fetching subcollections:', error);
     }
+  };
+  const logPathway = () => {
+    console.log("Pathway:", pathway);
   };
 
 
@@ -270,9 +274,12 @@ function Dashboard() {
     updateElectiveRequirements(pathway);
     
   }, [pathway]);
-  useLayoutEffect(() => {
-    updateElectiveRequirements(pathway);
-  }, [pathway]);
+
+  useEffect(() => {
+    if (!loading && !loadingElectiveCourses && !loadingElectiveMajorCourses) {
+      updateElectiveRequirements(pathway);
+    }
+  }, [loading, loadingElectiveCourses, loadingElectiveMajorCourses, pathway]);
 
   const updateElectiveRequirements = (pathway) => {
     // Calculate the total units of elective and elective major courses in the pathway
@@ -302,7 +309,45 @@ function Dashboard() {
     
   };
 
+  const savePathway = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const userDocRef = doc(firestore, 'User', user.uid);
+        const pathwayRef = collection(userDocRef, 'Pathway');
+  
+        // Delete existing pathway documents
+        await Promise.all(pathway.map(async (semester, index) => {
+          const semesterDocRef = doc(pathwayRef, (index + 1).toString());
+          const semesterSnapshot = await getDoc(semesterDocRef);
+          if (semesterSnapshot.exists()) {
+            await deleteDoc(semesterDocRef);
+          }
+        }));
+  
+        // Create new pathway documents with updated data
+        await Promise.all(pathway.map(async (semester, index) => {
+          const semesterDocRef = doc(pathwayRef, (index + 1).toString());
+          const coursesRef = collection(semesterDocRef, 'Courses');
+          await setDoc(semesterDocRef, {}); // Create semester document
+          await Promise.all(semester.courses.map(async (course) => {
+            const courseDocRef = doc(coursesRef, course.id);
+            await setDoc(courseDocRef, course); // Create course document
+          }));
+        }));
+  
+        console.log('Pathway updated successfully!');
+      }
+    } catch (error) {
+      console.error('Error updating pathway:', error);
+    }
+  };
+  
 
+  // Event handler for "Save" button click
+  const handleSaveButtonClick = () => {
+    savePathway();
+  };
 
   const handleCheckboxChange = (event, courseId) => {
     const { checked } = event.target;
@@ -385,6 +430,8 @@ function Dashboard() {
   }
 
 
+  
+
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="dashboard-container">
@@ -430,8 +477,8 @@ function Dashboard() {
             </div>
             <div className='btnControlPathway'>
 
-              <Button variant={4} >Reset</Button>
-              <Button variant={2} >Save</Button>
+              <Button variant={4} onClick={logPathway()} >Reset</Button>
+              <Button variant={2} onClick={handleSaveButtonClick}>Save</Button>
             </div>
           </div>
           <div className='pathwayHolder'>

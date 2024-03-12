@@ -1,20 +1,73 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import {  firestore } from '../firebase';
+import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { getDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import Navbar from '../Components/Navbar';
 import '../Styles/Home.css';
+import { BeatLoader } from 'react-spinners';
 import Wiggle from '../Assets/Images/wIGGLE.svg';
 import Triangle from '../Assets/Images/Triangle.svg';
 import Bino from '../Assets/Images/HomeImg.png';
 import Clap from '../Assets/Images/clapMicro.svg';
 import Button from '../Components/Button';
-import Logo from '../Assets/Images/PathFinder.svg';
+import PathFinder from '../Assets/Images/PathFinder.svg';
 import KeyMicroImage from '../Assets/Images/KeyMicro.png';
 import ThumbsUpMicro from '../Assets/Images/ThumbsUpMicro.svg';
 import ReactPlayer from 'react-player';
 import Pointer from '../Assets/Images/pointer.svg';
 
+
+
+
+
+
+
+
+
+
 export default function Home() {
-  return (
+  const [homeData, setHomeData] = useState(null);
+
+  useEffect(() => {
+    const fetchFirstDocument = async () => {
+      try {
+        const q = collection(firestore, "Home");
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          const firstDocumentData = querySnapshot.docs[0].data();
+          setHomeData(firstDocumentData);
+        } else {
+          console.log('No documents found in the "Home" collection.');
+        }
+      } catch (error) {
+        console.error('Error fetching documents:', error);
+      }
+    };
+
+    fetchFirstDocument();
+  }, []);
+
+  // Check if homeData is not null before accessing its properties
+  const homeParagraph = homeData ? homeData.HomeParagraph : "";
+  const testimonialVideo = homeData ? homeData.TestimonialVideo : "";
+  const videoLink = homeData ? homeData.VideoLink : "";
+  const sideImage = homeData ? homeData.SideImage : "";
+  const boxColour = homeData ? homeData.BoxColour: "";
+  const logoImage = homeData ? homeData.LogoImage: "";
+
+  if (!homeParagraph && !testimonialVideo && !videoLink && !sideImage && !logoImage) {
+    return (
+      <div className="loading-screen">
+        <BeatLoader color="#7100FF" loading={true} size={15} />
+      </div>
+    );
+  }
+
+
+
+
+  return ( 
     <div className='home'>
       <div className='gridHome'>
        
@@ -23,14 +76,14 @@ export default function Home() {
             <div className='grid-item'>
               <div className='welcome'>
                 <h4>Welcome to</h4>
-                <h1>PathFinder</h1>
+                <img src={logoImage} height={30} style={{filter:"drop-shadow(3px 3px 2px rgb(0 0 0 / 0.4))"}} />
                 <img src={Wiggle} />
                 <div>
                   <img src={Triangle} height={16} width={16} />
                   <h4>Made by UON, For UON</h4>
                 </div>
                 <p>
-                  With Pathfinder, UON students can explore an academic pathway tailored to their interests, goals, and academic requirements. Pathfinder empowers students to make informed decisions about their academic journey.
+                  {homeParagraph}
                 </p>
               </div>
             </div>
@@ -39,26 +92,25 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className='grid-item'>
-          <div className='regBox'>
-            <img src={Clap} width={80} height={80} />
-            <div>
-              <h4>Are you interested yet?</h4>
-              <h2>Join Now</h2>
+        <div className='grid-item' style={{ backgroundColor:"Var(--Secondary)", border:"3px solid #48484823" }}>
+        <div className='video'>
+            <div className='videoDesc'>
+              <div>
+                <img src={Clap} height={20} />
+                <h4>Testimonial</h4>
+              </div>
+              <ReactPlayer url={testimonialVideo} height="280px" width='356.4px' style={{ borderRadius: '10px', border: '4px solid black' }} />
             </div>
-            <Link to="/login">
-              <Button variant={2} additionalClass={'regBoxBtn'} >Join Us</Button>
-            </Link>
           </div>
         </div>
-        <div className='grid-item '>
+        <div className='grid-item ' style={{background:"#c9a2ff29", color:"var(--FontDark)"}}>
           <div className='video'>
             <div className='videoDesc'>
               <div>
                 <img src={Clap} height={20} />
                 <h4>How does it work?</h4>
               </div>
-              <ReactPlayer url='https://youtu.be/19PZH3ft8DQ' height="237.6px" width='356.4px' style={{ borderRadius: '10px', border: '4px solid black' }} />
+              <ReactPlayer url={videoLink} height="280px"  width='356.4px' style={{ borderRadius: '10px', border: '4px solid black' }} />
             </div>
           </div>
         </div>
@@ -70,12 +122,18 @@ export default function Home() {
               <Button variant={2} img={ThumbsUpMicro}>Register</Button>
             </Link></div>
             <div className='testimonialHolder'>  
-          <div className='testimonialHeader'>
-            <h4>Testimonials</h4>
-            <img src={Pointer} alt='' height={30} />
+            <div className='regBox' style={{background:boxColour, justifyContent:"space-between"}}>
+            <img src={sideImage} width={280} height={400} style={{objectFit:"contain"}}/>
+            <div>
+              
+              
+              
+              
+            </div>
+            <Link to="/login">
+              <Button variant={2} additionalClass={'regBoxBtn'} img={Clap} >Join Us</Button>
+            </Link>
           </div>
-          
-            Add testimonials here
           </div>
         </div>
       </div>

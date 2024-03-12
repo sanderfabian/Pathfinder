@@ -14,7 +14,7 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await auth.signOut();
-      navigate('/login');
+      navigate('/');
     } catch (error) {
       console.error('Error logging out:', error);
     }
@@ -23,7 +23,7 @@ export default function Navbar() {
   return (
     <div>
       <div className='nav'>
-        <img src={Logo} className='brandName' />
+        <img src={Logo} className='brandName' height={30}  style={{filter:"drop-shadow(3px 3px 2px rgb(0 0 0 / 0.4))"}}/>
         
           <div className='loginGroup'>
             <div className='loggedUser'>

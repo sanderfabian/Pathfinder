@@ -1,10 +1,10 @@
+// Import createContext and useContext from React
+import { createContext, useContext, useEffect, useState } from "react";
+
 // Import necessary dependencies from firebase
 import { auth, firestore } from "../firebase";
 import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, updateEmail, updatePassword, sendEmailVerification } from 'firebase/auth';
-
-// Import createContext and useContext from React
-import { createContext, useContext, useEffect, useState } from "react";
 
 // Create a context for user authentication
 const UserAuthContext = createContext();
@@ -84,13 +84,14 @@ export const UserAuthProvider = ({ children }) => {
     }, []);
 
 
-      // Custom method to get loading state
-      const getLoading = () => {
+    // Custom method to get loading state
+    const getLoading = () => {
         return loading;
     }
+
     // Provide the user authentication context to the app
     return (
-        <UserAuthContext.Provider value={{ createUser, user, moreUserInfo, hasPathway, loading, login, logout, sendPwdResetEmail, changeEmail, changePassword, emailVerification }}>
+        <UserAuthContext.Provider value={{ createUser, user, moreUserInfo, hasPathway, loading, login, logout, sendPwdResetEmail, changeEmail, changePassword, emailVerification, getLoading }}>
             {children}
         </UserAuthContext.Provider>
     );

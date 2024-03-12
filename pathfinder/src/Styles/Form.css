@@ -379,4 +379,20 @@ gap: 10px!important;
     text-align: start;
   }
 
- 
+  .selectDrop {
+    
+  }
+  .formHeader div:nth-child(1)  .selectDrop{
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+
+ .selectDrop .css-1d3z3hw-MuiOutlinedInput-notchedOutline{
+  border: solid 3px var(--Border);
+ } 
+
+ .selectDrop .css-1d3z3hw-MuiOutlinedInput-notchedOutline:hover{
+  border: solid 3px var(--Border);
+  
+ }

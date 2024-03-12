@@ -34,8 +34,8 @@ function Login() {
   };
 
   return (
-    <div className="loginBody">
-      <img src={PathFinder} height={40} />
+    <div className="loginBody" style={{ borderRadius: "10px", backgroundColor: "var(--Secondary)" }}>
+      <img src={PathFinder} height={30} style={{filter:"drop-shadow(3px 3px 2px rgb(0 0 0 / 0.4))"}} />
       <div className="loginRegBox">
         <div className="card">
         

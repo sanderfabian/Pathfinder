@@ -116,11 +116,11 @@ const toggleView = () => {
             break;
           case 'Elective':
             courseType = 'Elective';
-            mutable = true;
+            mutable = false;
             break;
           case 'Elective Major':
             courseType = 'Elective Major';
-            mutable = true;
+            mutable = false;
             break;
           case 'Major':
             courseType = 'Major';
