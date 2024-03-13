@@ -39,7 +39,7 @@ export default function Form() {
     const [isProgramLoading, setIsProgramLoading] = useState(false);
     const [isFetching, setIsFetching] = useState(false);
    // const [pathway, setPathwayData] = useState([]);
-    const {  hasPathway } = useUserAuth();
+    const {  setHasPathway } = useUserAuth();
 
     useEffect(() => {
         const fetchDegrees = async () => {
@@ -124,8 +124,10 @@ export default function Form() {
 
         useEffect(() => {
             const handlePathwayCreation = async () => {
+                setIsFetching(true);
                 if (pathwayCreated) {
                     // Navigate to dashboard after pathway creation
+                    setHasPathway(true);
                     navigate('/Dashboard');
                 }
             };
@@ -134,6 +136,8 @@ export default function Form() {
         }, [pathwayCreated, navigate]);
     
         const handleNextButtonClick = async () => {
+            // Start fetch operation
+            setIsFetching(true);
             try {
                 // Ensure majorValue, study, and perSem are defined
                 if (!majorValue || !study || !perSem) {
@@ -147,8 +151,7 @@ export default function Form() {
                 // Update user data
                 await updateUser();
     
-                // Start fetch operation
-                setIsFetching(true);
+                
     
                 // Once subcollections are fetched, create pathway
                 const sortedCoursesData = await fetchSubCollections(cleanedDegreeValue, cleanedMajor, study);
@@ -164,7 +167,7 @@ export default function Form() {
                 setPathwayCreated(true);
             } catch (error) {
                 console.error('Error:', error);
-                setIsFetching(false); // Ensure setIsFetching is called in case of error
+             
             }
         };
     

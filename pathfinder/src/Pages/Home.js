@@ -118,7 +118,7 @@ export default function Home() {
           <div className='loginGroupHome'><Link to="/login">
             <Button variant={1} img={KeyMicroImage}>Login</Button>
           </Link>
-            <Link to="/login">
+            <Link to="/register">
               <Button variant={2} img={ThumbsUpMicro}>Register</Button>
             </Link></div>
             <div className='testimonialHolder'>  
@@ -130,7 +130,7 @@ export default function Home() {
               
               
             </div>
-            <Link to="/login">
+            <Link to="/register">
               <Button variant={2} additionalClass={'regBoxBtn'} img={Clap} >Join Us</Button>
             </Link>
           </div>

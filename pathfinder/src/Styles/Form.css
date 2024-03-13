@@ -396,3 +396,14 @@ gap: 10px!important;
   border: solid 3px var(--Border);
   
  }
+
+ .modalContent{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+ }
+ .modalActions{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+ }

@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // Import Navigate for redirect
 import Home from './Pages/Home';
 import Login from './Pages/Login';
+import Register from './Pages/Register';
 import Dashboard from './Pages/Dashboard';
 import Form1 from './Pages/Form1';
 import Form from './Pages/Form';
@@ -23,7 +24,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
-           
+            <Route path="/register" element={<Register />} />
             {/* Check if user is authenticated before rendering protected routes */}
             <Route
               path="/dashboard"

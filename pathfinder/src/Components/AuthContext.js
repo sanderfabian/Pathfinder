@@ -16,6 +16,7 @@ export const UserAuthProvider = ({ children }) => {
     const [moreUserInfo, setMoreUserInfo] = useState();
     const [loading, setLoading] = useState(true); // Include loading state here
     const [hasPathway, setHasPathway] = useState(false);
+    
 
     // Define functions to handle user authentication actions
     const createUser = (email, password) => {
@@ -91,7 +92,7 @@ export const UserAuthProvider = ({ children }) => {
 
     // Provide the user authentication context to the app
     return (
-        <UserAuthContext.Provider value={{ createUser, user, moreUserInfo, hasPathway, loading, login, logout, sendPwdResetEmail, changeEmail, changePassword, emailVerification, getLoading }}>
+        <UserAuthContext.Provider value={{ createUser, user, moreUserInfo, hasPathway, loading, login, logout,setHasPathway, sendPwdResetEmail, changeEmail, changePassword, emailVerification,createUser, getLoading }}>
             {children}
         </UserAuthContext.Provider>
     );

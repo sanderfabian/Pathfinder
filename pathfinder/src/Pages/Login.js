@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth, signInWithEmailAndPassword } from '../firebase';
 import KeyMicro from '../Assets/Images/KeyMicro.png';
 import Triangle from '../Assets/Images/Triangle.svg';
 import PathFinder from '../Assets/Images/PathFinder.svg';
 import '../Styles/Login.css';
 import { useUserAuth } from '../Components/AuthContext';
 import Button from '../Components/Button';
+import BackButton from '../Components/BackButton';
 
 
 function Login() {
@@ -38,7 +38,7 @@ function Login() {
       <img src={PathFinder} height={30} style={{filter:"drop-shadow(3px 3px 2px rgb(0 0 0 / 0.4))"}} />
       <div className="loginRegBox">
         <div className="card">
-        
+        <BackButton/>
           <div className="cardHeader">
             <div>
               <img src={Triangle} height={12} width={12} />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, doc, getDoc , updateDoc, deleteDoc, setDoc} from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc , updateDoc, deleteDoc, setDoc, deleteField} from 'firebase/firestore';
 import { auth, firestore } from '../firebase';
 import Navbar from '../Components/Navbar';
 import { BeatLoader } from 'react-spinners';
@@ -32,7 +32,8 @@ function Dashboard() {
   const [isChecked, setIsChecked] = useState(false);
   const [isElectiveSatisfied, setIsElectiveSatisfied] = useState(false);
   const [isElectiveMajorSatisfied, setIsElectiveMajorSatisfied] = useState(false);
-  
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const[isSaving, setIsSaving] = useState(false);
  
 
   useEffect(() => {
@@ -96,6 +97,63 @@ function Dashboard() {
 
   }, []);
 
+
+
+  const resetPathway = async () => {
+    setLoading(true);
+    try {
+      const user = auth.currentUser;
+      console.log('Current user:', user); // Check if user is defined
+      if (user) {
+        const userDocRef = doc(firestore, 'User', user.uid);
+        console.log('User document reference:', userDocRef); // Check if userDocRef is defined
+        const pathwayRef = collection(userDocRef, 'Pathway');
+        console.log('Pathway collection reference:', pathwayRef); // Check if pathwayRef is defined
+  
+        // Get all documents in the Pathway collection
+        const pathwaySnapshot = await getDocs(pathwayRef);
+        console.log('Pathway snapshot:', pathwaySnapshot); // Check if pathwaySnapshot is defined
+  
+        // Iterate through each document in the Pathway collection
+        await Promise.all(pathwaySnapshot.docs.map(async (pathwayDoc) => {
+          const pathwayDocRef = doc(pathwayRef, pathwayDoc.id);
+          console.log('Pathway document reference:', pathwayDocRef); // Check if pathwayDocRef is defined
+          const coursesRef = collection(pathwayDocRef, 'Courses');
+          console.log('Courses collection reference:', coursesRef); // Check if coursesRef is defined
+  
+          // Get all documents in the Courses collection of this pathway document
+          const coursesSnapshot = await getDocs(coursesRef);
+          console.log('Courses snapshot:', coursesSnapshot); // Check if coursesSnapshot is defined
+  
+          // Iterate through each document in the Courses collection and delete it
+          await Promise.all(coursesSnapshot.docs.map(async (courseDoc) => {
+            await deleteDoc(doc(coursesRef, courseDoc.id));
+          }));
+  
+          // Delete the Courses collection itself
+          await deleteField(pathwayDocRef, 'Courses');
+          console.log('Courses collection deleted for pathway:', pathwayDoc.id);
+  
+          // Delete the pathway document
+          await deleteDoc(pathwayDocRef);
+          console.log('Pathway document deleted:', pathwayDoc.id);
+          navigate("/form");
+        }));
+  
+      
+        console.log('Pathway collection has been deleted.');
+      } else {
+        console.error('User is not authenticated.');
+      }
+    } catch (error) {
+      console.error('Error resetting pathway:', error);
+    }
+  };
+  
+  // Event handler for confirming pathway reset
+  const handleResetConfirmation = () => {
+    resetPathway();
+  };
 
   const fetchSubCollections = async (program, major, study) => {
     try {
@@ -177,9 +235,7 @@ function Dashboard() {
       console.error('Error fetching subcollections:', error);
     }
   };
-  const logPathway = () => {
-    console.log("Pathway:", pathway);
-  };
+
 
 
   const handleDragEnd = (result) => {
@@ -310,6 +366,7 @@ function Dashboard() {
   };
 
   const savePathway = async () => {
+    setIsSaving(true);
     try {
       const user = auth.currentUser;
       if (user) {
@@ -337,6 +394,7 @@ function Dashboard() {
         }));
   
         console.log('Pathway updated successfully!');
+        setIsSaving(false);
       }
     } catch (error) {
       console.error('Error updating pathway:', error);
@@ -477,7 +535,7 @@ function Dashboard() {
             </div>
             <div className='btnControlPathway'>
 
-              <Button variant={4} onClick={logPathway()} >Reset</Button>
+              <Button variant={4} onClick={() => setIsResetModalOpen(true)} >Reset</Button>
               <Button variant={2} onClick={handleSaveButtonClick}>Save</Button>
             </div>
           </div>
@@ -487,6 +545,30 @@ function Dashboard() {
             ))}
           </div>
         </div>
+        {isResetModalOpen && (
+          <div className="loading-screen" style={{backgroundColor:'#484848c2',border:'none'}}>
+        <div className="modal">
+          <div className="modalContent">
+            <h4>Are you sure you want to reset?</h4>
+            <p>Resetting your pathway will delete your current pathway,<br></br> are you sure you want to reset your current pathway?</p>
+            <div className="modalActions">
+              <Button variant={2} onClick={() => setIsResetModalOpen(false)}>No, Keep my current pathway</Button>
+              <Button variant={4} onClick={handleResetConfirmation}>Yes, im ready to Reset</Button>
+            </div>
+          </div>
+        </div>
+        </div>
+      )}
+      {isSaving && (
+          <div className="loading-screen" style={{backgroundColor:'#484848c2',border:'none'}}>
+        <div className="modal">
+          <div className="modalContent" style={{display:'flex', justifyContent:'center',alignItems:'center'}}>
+            <h4>Saving</h4>
+            <BeatLoader color="#7100FF" loading={true} size={15} />
+          </div>
+        </div>
+        </div>
+      )}
       </div>
     </DragDropContext>
   );
