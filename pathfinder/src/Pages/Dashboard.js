@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, getDocs, doc, getDoc , updateDoc, deleteDoc, setDoc, deleteField} from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, updateDoc, deleteDoc, setDoc, deleteField } from 'firebase/firestore';
 import { auth, firestore } from '../firebase';
 import Navbar from '../Components/Navbar';
-import { BeatLoader } from 'react-spinners';
+import { MoonLoader } from 'react-spinners';
 import PathwayCard from '../Components/PathwayCard';
 import '../Styles/Dashboard.css';
 import SmilingFace from '../Assets/Images/smilingFace.svg'
@@ -12,6 +12,9 @@ import Semester from '../Components/Semester';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import ElectiveHolder from '../Components/ElectiveHolder';
 import Requirment from '../Components/Requirement';
+import Loading from '../Components/Loading';
+import emojiLoad from '../Assets/Animations/emojiLoad.json';
+import Lottie from 'react-lottie';
 
 
 function Dashboard() {
@@ -33,8 +36,9 @@ function Dashboard() {
   const [isElectiveSatisfied, setIsElectiveSatisfied] = useState(false);
   const [isElectiveMajorSatisfied, setIsElectiveMajorSatisfied] = useState(false);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
-  const[isSaving, setIsSaving] = useState(false);
- 
+  const [isSaving, setIsSaving] = useState(false);
+  const [deleting, setIsDeleting] = useState(false);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -100,7 +104,7 @@ function Dashboard() {
 
 
   const resetPathway = async () => {
-    setLoading(true);
+    
     try {
       const user = auth.currentUser;
       console.log('Current user:', user); // Check if user is defined
@@ -109,38 +113,38 @@ function Dashboard() {
         console.log('User document reference:', userDocRef); // Check if userDocRef is defined
         const pathwayRef = collection(userDocRef, 'Pathway');
         console.log('Pathway collection reference:', pathwayRef); // Check if pathwayRef is defined
-  
+
         // Get all documents in the Pathway collection
         const pathwaySnapshot = await getDocs(pathwayRef);
         console.log('Pathway snapshot:', pathwaySnapshot); // Check if pathwaySnapshot is defined
-  
+
         // Iterate through each document in the Pathway collection
         await Promise.all(pathwaySnapshot.docs.map(async (pathwayDoc) => {
           const pathwayDocRef = doc(pathwayRef, pathwayDoc.id);
           console.log('Pathway document reference:', pathwayDocRef); // Check if pathwayDocRef is defined
           const coursesRef = collection(pathwayDocRef, 'Courses');
           console.log('Courses collection reference:', coursesRef); // Check if coursesRef is defined
-  
+
           // Get all documents in the Courses collection of this pathway document
           const coursesSnapshot = await getDocs(coursesRef);
           console.log('Courses snapshot:', coursesSnapshot); // Check if coursesSnapshot is defined
-  
+
           // Iterate through each document in the Courses collection and delete it
           await Promise.all(coursesSnapshot.docs.map(async (courseDoc) => {
             await deleteDoc(doc(coursesRef, courseDoc.id));
           }));
-  
+
           // Delete the Courses collection itself
           await deleteField(pathwayDocRef, 'Courses');
           console.log('Courses collection deleted for pathway:', pathwayDoc.id);
-  
+
           // Delete the pathway document
           await deleteDoc(pathwayDocRef);
           console.log('Pathway document deleted:', pathwayDoc.id);
-          navigate("/form");
+          
         }));
-  
-      
+
+
         console.log('Pathway collection has been deleted.');
       } else {
         console.error('User is not authenticated.');
@@ -149,10 +153,12 @@ function Dashboard() {
       console.error('Error resetting pathway:', error);
     }
   };
-  
+
   // Event handler for confirming pathway reset
-  const handleResetConfirmation = () => {
-    resetPathway();
+  const handleResetConfirmation = async () => {
+    setIsDeleting(true);
+    await resetPathway();
+    navigate("/form");
   };
 
   const fetchSubCollections = async (program, major, study) => {
@@ -187,7 +193,7 @@ function Dashboard() {
 
         return coursesData;
       };
-      
+
       const addCourseTypeToCourses = async (coursesWithReferences, collectionName) => {
         const coursesWithCourseType = [];
         let courseType;
@@ -328,7 +334,7 @@ function Dashboard() {
 
   useEffect(() => {
     updateElectiveRequirements(pathway);
-    
+
   }, [pathway]);
 
   useEffect(() => {
@@ -362,7 +368,7 @@ function Dashboard() {
     // Set the state variables to indicate satisfaction
     setIsElectiveSatisfied(isElectiveSatisfied);
     setIsElectiveMajorSatisfied(isElectiveMajorSatisfied);
-    
+
   };
 
   const savePathway = async () => {
@@ -372,16 +378,10 @@ function Dashboard() {
       if (user) {
         const userDocRef = doc(firestore, 'User', user.uid);
         const pathwayRef = collection(userDocRef, 'Pathway');
-  
+
         // Delete existing pathway documents
-        await Promise.all(pathway.map(async (semester, index) => {
-          const semesterDocRef = doc(pathwayRef, (index + 1).toString());
-          const semesterSnapshot = await getDoc(semesterDocRef);
-          if (semesterSnapshot.exists()) {
-            await deleteDoc(semesterDocRef);
-          }
-        }));
-  
+        await resetPathway();
+
         // Create new pathway documents with updated data
         await Promise.all(pathway.map(async (semester, index) => {
           const semesterDocRef = doc(pathwayRef, (index + 1).toString());
@@ -392,7 +392,7 @@ function Dashboard() {
             await setDoc(courseDocRef, course); // Create course document
           }));
         }));
-  
+
         console.log('Pathway updated successfully!');
         setIsSaving(false);
       }
@@ -400,7 +400,7 @@ function Dashboard() {
       console.error('Error updating pathway:', error);
     }
   };
-  
+
 
   // Event handler for "Save" button click
   const handleSaveButtonClick = () => {
@@ -481,14 +481,18 @@ function Dashboard() {
 
   if (loading || loadingElectiveCourses || loadingElectiveMajorCourses) {
     return (
-      <div className="loading-screen">
-        <BeatLoader color="#7100FF" loading={true} size={15} />
-      </div>
+      <Loading text="Preparing your Dashboard..." subtext="This might take a minute!" color="var(--Tertiary)" />
+    );
+  }
+
+  if (deleting) {
+    return (
+      <Loading text="Resetting your Pathway..." subtext="This might take a minute!" color="var(--Alert)" />
     );
   }
 
 
-  
+
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
@@ -529,8 +533,8 @@ function Dashboard() {
           <div className='pathwayPanel'>
             <div>
               <div>
-                <Requirment name="Elective  Units required:"  req={electiveRequirementUpdate} isSatisfied={isElectiveSatisfied} />
-                <Requirment name="Elective  Major Units required:"  req={electiveMajorRequirementUpdate} isSatisfied={isElectiveMajorSatisfied} />
+                <Requirment name="Elective  Units required:" req={electiveRequirementUpdate} isSatisfied={isElectiveSatisfied} />
+                <Requirment name="Elective  Major Units required:" req={electiveMajorRequirementUpdate} isSatisfied={isElectiveMajorSatisfied} />
               </div>
             </div>
             <div className='btnControlPathway'>
@@ -546,29 +550,33 @@ function Dashboard() {
           </div>
         </div>
         {isResetModalOpen && (
-          <div className="loading-screen" style={{backgroundColor:'#484848c2',border:'none'}}>
-        <div className="modal">
-          <div className="modalContent">
-            <h4>Are you sure you want to reset?</h4>
-            <p>Resetting your pathway will delete your current pathway,<br></br> are you sure you want to reset your current pathway?</p>
-            <div className="modalActions">
-              <Button variant={2} onClick={() => setIsResetModalOpen(false)}>No, Keep my current pathway</Button>
-              <Button variant={4} onClick={handleResetConfirmation}>Yes, im ready to Reset</Button>
+          <div className="loading-screen" style={{ backgroundColor: '#484848c2', border: 'none' }}>
+            <div className="modal">
+              <div className="modalContent">
+                <h4>Are you sure you want to reset?</h4>
+                <p>Resetting your pathway will delete your current pathway,<br></br> are you sure you want to reset your current pathway?</p>
+                <div className="modalActions">
+                  <Button variant={2} onClick={() => setIsResetModalOpen(false)}>No, Keep my current pathway</Button>
+                  <Button variant={4} onClick={handleResetConfirmation}>Yes, im ready to Reset</Button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        </div>
-      )}
-      {isSaving && (
-          <div className="loading-screen" style={{backgroundColor:'#484848c2',border:'none'}}>
-        <div className="modal">
-          <div className="modalContent" style={{display:'flex', justifyContent:'center',alignItems:'center'}}>
-            <h4>Saving</h4>
-            <BeatLoader color="#7100FF" loading={true} size={15} />
+        )}
+        {isSaving && (
+          <div className="loading-screen" style={{ backgroundColor: '#484848c2', border: 'none' }}>
+
+            <div className="modal" >
+              <div className="modalContent" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Lottie options={{ animationData: emojiLoad }} width={100} height={100} style={{ filter: "drop-shadow(3px 3px 2px rgb(0 0 0 / 0.2))", marginTop: "-80px" }} />
+                <h3 style={{ margin: '0px', color: "var(--Tertiary)", letterSpacing: "-1px" }}>Saving...</h3>
+                <p style={{ margin: '0px', color: "var(--FontDark)", marginBottom: "10px" }}>Saving your selection for future sessions!</p>
+                <MoonLoader color="var(--Tertiary)" loading={true} size={30} />
+              </div>
+
+            </div>
           </div>
-        </div>
-        </div>
-      )}
+        )}
       </div>
     </DragDropContext>
   );

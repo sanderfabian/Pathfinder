@@ -21,6 +21,7 @@ import Load from '../Assets/Animations/load.json'
 import Alert from '../Assets/Animations/alert.json'
 import Tick from '../Assets/Animations/tick.json'
 import Lottie from 'react-lottie';
+import Loading from '../Components/Loading';
 
 export default function Form() {
     const navigate = useNavigate();
@@ -124,7 +125,7 @@ export default function Form() {
 
         useEffect(() => {
             const handlePathwayCreation = async () => {
-                setIsFetching(true);
+                
                 if (pathwayCreated) {
                     // Navigate to dashboard after pathway creation
                     setHasPathway(true);
@@ -173,18 +174,20 @@ export default function Form() {
     
         
         
-       // useEffect(() => {
-         //   console.log("Pathway:", pathway);
-         // }, [pathway]);
+
           
 
         
         
-        if (loading || isFetching) { // Check if loading or fetch operation is in progress
+        if (loading ) { // Check if loading operation is in progress
             return (
-                <div className="loading-screen">
-                    <BeatLoader color="#7100FF" loading={true} size={15} />
-                </div>
+                <Loading text="Loading..." subtext="Getting Ready!" color="var(--Secondary)"/>
+            );
+        }
+
+        if (isFetching) { // Check if fetch operation is in progress
+            return (
+                <Loading text="Preparing your Pathway..." subtext="We're working on it!" color="var(--Tertiary)"/>
             );
         }
 

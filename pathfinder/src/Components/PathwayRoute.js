@@ -1,16 +1,15 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useUserAuth } from '../Components/AuthContext';
-import { BeatLoader } from 'react-spinners';
+import Loading  from './Loading';
+import { BeatLoader, MoonLoader } from 'react-spinners';
 
 function PathwayRoute({ children }) {
   const { user, hasPathway, loading, getLoading } = useUserAuth();
 
   if (getLoading()) {
     return (
-      <div className="loading-screen">
-        <BeatLoader color="#7100FF" loading={true} size={15} />
-      </div>
+      <Loading text="Loading..." subtext="Getting Ready!" color="var(--Tertiary)"/>
     );
   }
 
@@ -32,9 +31,7 @@ function PathwayRoute({ children }) {
 
   // Render loading spinner while waiting for pathway data
   return (
-    <div className="loading-screen">
-      <BeatLoader color="#7100FF" loading={true} size={15} />
-    </div>
+    <Loading text="Loading..." subtext="Getting Ready!" color="var(--Tertiary)"/>
   );
 }
 
