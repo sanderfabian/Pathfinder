@@ -92,7 +92,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className='grid-item' style={{ backgroundColor: "Var(--Secondary)", border: "3px solid #48484823" }}>
+        <div className='grid-item gr2' style={{ backgroundColor: "Var(--Secondary)", border: "3px solid #48484823" }}>
           <div className='video'>
             <div className='videoDesc'>
               <div>
@@ -103,7 +103,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <div className='grid-item ' style={{ background: "#c9a2ff29", color: "var(--FontDark)" }}>
+        <div className='grid-item gr3 ' style={{ background: "#c9a2ff29", color: "var(--FontDark)" }}>
           <div className='video'>
             <div className='videoDesc'>
               <div>
