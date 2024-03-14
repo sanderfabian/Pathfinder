@@ -416,7 +416,7 @@ letter-spacing: -0.05em;
     }
 
     .vid{
-        width: auto;
+        width: calc(100% - 10px);
     }
 
 
