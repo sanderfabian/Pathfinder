@@ -121,7 +121,7 @@ const ViewCourses = () => {
                 {title}
             </Typography>
             <DataGrid
-                rows={data.slice(0, 5)}
+                rows={data}
                 columns={[
                     { field: 'id', headerName: <div style={{ fontWeight: 'bold' }}>ID</div>, width: 200 },
                     {
