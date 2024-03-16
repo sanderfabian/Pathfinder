@@ -84,7 +84,7 @@ const MCourses = () => {
     };
 
     return (
-        <div style={{ height: 'calc(100vh - 130px)', width: '100%', position: 'relative', backgroundColor: 'white', marginLeft: '240px', marginTop: '80px' }}>
+        <div style={{ height: 'calc(100vh - 130px)', position: 'relative', backgroundColor: 'white', marginLeft: '240px', marginTop: '80px' }}>
             <AdminLayout/>
             <Sidebar />
             <div style={{ flexGrow: 1, paddingLeft: '20px', paddingRight: '20px' }}>
