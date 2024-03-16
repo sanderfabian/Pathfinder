@@ -49,75 +49,46 @@ export const UserAuthProvider = ({ children }) => {
         return sendEmailVerification(user);
     }
 
-    // UseEffect hook to handle authentication state changes
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            setLoading(true); // Set loading to true while authentication and data fetching are in progress
-            if (currentUser) {
-                try {
-                    setUser(currentUser);
-                    const userDocRef = doc(firestore, 'User', currentUser.uid);
-                    const userDocSnapshot = await getDoc(userDocRef);
-                    
-                    if (userDocSnapshot.exists()) {
-                        setMoreUserInfo(userDocSnapshot.data());
-                        localStorage.setItem('Username', userDocSnapshot.data().Username);
-                        
-                        // Check if the user has a pathway
-                        const pathwayCollectionRef = collection(firestore, 'User', currentUser.uid, 'Pathway');
-                        const pathwaySnapshot = await getDocs(pathwayCollectionRef);
-                        
-                        setHasPathway(!pathwaySnapshot.empty);
-                    }
-                } catch (error) {
-                    console.error('Error fetching user data:', error);
-                } finally {
-                    setLoading(false); // Set loading to false once pathway check is completed
-                }
-            } else {
-                setUser(null);
-                setMoreUserInfo(null);
-                localStorage.removeItem('UID');
-                setHasPathway(false); // Set pathway state to false if user is not logged in
-                setLoading(false); // Set loading to false if user is not logged in
-            }
-        });
-        return () => unsubscribe();
-    }, []);
+   // UseEffect hook to handle authentication state changes
+useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+        setLoading(true); // Set loading to true while authentication and data fetching are in progress
+        if (currentUser) {
+            try {
+                setUser(currentUser);
+                const userDocRef = doc(firestore, 'User', currentUser.uid);
+                const userDocSnapshot = await getDoc(userDocRef);
 
+                if (userDocSnapshot.exists()) {
+                    setMoreUserInfo(userDocSnapshot.data());
+                    localStorage.setItem('Username', userDocSnapshot.data().Username);
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-            setLoading(true); // Set loading to true while authentication and data fetching are in progress
-            if (currentUser) {
-                try {
-                    setUser(currentUser);
-                    const userDocRef = doc(firestore, 'User', currentUser.uid);
-                    const userDocSnapshot = await getDoc(userDocRef);
-                    
-                    if (userDocSnapshot.exists()) {
-                        setMoreUserInfo(userDocSnapshot.data());
-                        localStorage.setItem('Username', userDocSnapshot.data().Username);
-                        
-                        // Check if the user is an admin
-                        const isAdmin = userDocSnapshot.data().IsAdmin || false; // Default to false if attribute doesn't exist
-                        setIsAdmin(isAdmin);
-                    }
-                } catch (error) {
-                    console.error('Error fetching user data:', error);
-                } finally {
-                    setLoading(false); // Set loading to false once admin check is completed
+                    // Check if the user has a pathway
+                    const pathwayCollectionRef = collection(firestore, 'User', currentUser.uid, 'Pathway');
+                    const pathwaySnapshot = await getDocs(pathwayCollectionRef);
+
+                    setHasPathway(!pathwaySnapshot.empty);
+
+                    // Check if the user is an admin
+                    const isAdmin = userDocSnapshot.data().IsAdmin || false; // Default to false if attribute doesn't exist
+                    setIsAdmin(isAdmin);
                 }
-            } else {
-                setUser(null);
-                setMoreUserInfo(null);
-                localStorage.removeItem('UID');
-                setIsAdmin(false); // Set isAdmin to false if user is not logged in
-                setLoading(false); // Set loading to false if user is not logged in
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            } finally {
+                setLoading(false); // Set loading to false once data fetching is completed
             }
-        });
-        return () => unsubscribe();
-    }, []);
+        } else {
+            setUser(null);
+            setMoreUserInfo(null);
+            localStorage.removeItem('UID');
+            setHasPathway(false); // Set pathway state to false if user is not logged in
+            setIsAdmin(false); // Set isAdmin to false if user is not logged in
+            setLoading(false); // Set loading to false if user is not logged in
+        }
+    });
+    return () => unsubscribe();
+}, []);
 
     // Custom method to get loading state
     const getLoading = () => {
