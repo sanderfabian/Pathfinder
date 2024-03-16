@@ -52,7 +52,7 @@ function Register() {
     };
 
     return (
-        <div className="loginBody" style={{ borderRadius: "10px", backgroundColor: "var(--Tertiary)" }}>
+        <div className="loginBody" style={{  backgroundColor: "var(--Tertiary)" }}>
          
             <div className="loginRegBox">
                 <div className="card">

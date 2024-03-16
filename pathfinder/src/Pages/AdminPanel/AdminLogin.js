@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import KeyMicro from '../Assets/Images/KeyMicro.png';
-import Triangle from '../Assets/Images/Triangle.svg';
-import PathFinder from '../Assets/Images/PathFinder.svg';
-import '../Styles/Login.css';
-import { useUserAuth } from '../Components/AuthContext';
-import Button from '../Components/Button';
-import BackButton from '../Components/BackButton';
+import KeyMicro from '../../Assets/Images/KeyMicro.png';
+import Triangle from '../../Assets/Images/Triangle.svg';
+import PathFinder from '../../Assets/Images/PathFinder.svg';
+import '../../Styles/Login.css';
+import { useUserAuth } from '../../Components/AuthContext';
+import Button from '../../Components/Button';
+import BackButton from '../../Components/BackButton';
 
 
-function Login() {
+function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -20,7 +20,7 @@ function Login() {
     try {
       setError(null);
       await login(email, password); // Use login method from AuthContext
-      navigate('/Dashboard');
+      navigate('/admin-panel');
     } catch (error) {
 
       
@@ -29,20 +29,17 @@ function Login() {
     }
   };
 
-  const handleRegister = () => {
-    navigate('/register');
-  };
 
   return (
-    <div className="loginBody" style={{  backgroundColor: "var(--Secondary)" }}>
+    <div className="loginBody" style={{  backgroundColor: "var(--Alert)" }}>
       <img src={PathFinder} height={30} style={{filter:"drop-shadow(3px 3px 2px rgb(0 0 0 / 0.4))"}} />
       <div className="loginRegBox">
         <div className="card">
-        <BackButton/>
+ 
           <div className="cardHeader">
             <div>
               <img src={Triangle} height={12} width={12} />
-              <h4>Login</h4>
+              <h4>Admin Login</h4>
             </div>
             <img src={KeyMicro} height={32} width={32} />
           </div>
@@ -58,22 +55,13 @@ function Login() {
             {error && <p style={{ color: 'red' }}>{error}</p>}
             </div>
             
-            <Button variant={3} additionalClass="fatBtn" onClick={handleLogin}>Login</Button>
+            <Button variant={2} additionalClass="fatBtn" onClick={handleLogin}>Login</Button>
 
           </div>
-          <div className="card">
-          <div className="cardHeader">
-            <div>
-              <img src={Triangle} height={12} width={12} />
-              <h4>Don't have an account?</h4>
-            </div>
-            <img src={KeyMicro} height={32} width={32} />
-          </div>
-          <Button onClick={handleRegister} variant={2} additionalClass="fatBtn">Register</Button>
-        </div>
+          
       </div>
     </div>
   );
 }
 
-export default Login;
+export default AdminLogin;

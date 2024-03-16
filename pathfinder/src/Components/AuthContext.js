@@ -16,6 +16,7 @@ export const UserAuthProvider = ({ children }) => {
     const [moreUserInfo, setMoreUserInfo] = useState();
     const [loading, setLoading] = useState(true); // Include loading state here
     const [hasPathway, setHasPathway] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
     
 
     // Define functions to handle user authentication actions
@@ -85,6 +86,39 @@ export const UserAuthProvider = ({ children }) => {
     }, []);
 
 
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            setLoading(true); // Set loading to true while authentication and data fetching are in progress
+            if (currentUser) {
+                try {
+                    setUser(currentUser);
+                    const userDocRef = doc(firestore, 'User', currentUser.uid);
+                    const userDocSnapshot = await getDoc(userDocRef);
+                    
+                    if (userDocSnapshot.exists()) {
+                        setMoreUserInfo(userDocSnapshot.data());
+                        localStorage.setItem('Username', userDocSnapshot.data().Username);
+                        
+                        // Check if the user is an admin
+                        const isAdmin = userDocSnapshot.data().IsAdmin || false; // Default to false if attribute doesn't exist
+                        setIsAdmin(isAdmin);
+                    }
+                } catch (error) {
+                    console.error('Error fetching user data:', error);
+                } finally {
+                    setLoading(false); // Set loading to false once admin check is completed
+                }
+            } else {
+                setUser(null);
+                setMoreUserInfo(null);
+                localStorage.removeItem('UID');
+                setIsAdmin(false); // Set isAdmin to false if user is not logged in
+                setLoading(false); // Set loading to false if user is not logged in
+            }
+        });
+        return () => unsubscribe();
+    }, []);
+
     // Custom method to get loading state
     const getLoading = () => {
         return loading;
@@ -92,7 +126,7 @@ export const UserAuthProvider = ({ children }) => {
 
     // Provide the user authentication context to the app
     return (
-        <UserAuthContext.Provider value={{ createUser, user, moreUserInfo, hasPathway, loading, login, logout,setHasPathway, sendPwdResetEmail, changeEmail, changePassword, emailVerification,createUser, getLoading }}>
+        <UserAuthContext.Provider value={{ createUser, user, moreUserInfo, hasPathway,isAdmin, loading, login, logout,setHasPathway, sendPwdResetEmail, changeEmail, changePassword, emailVerification,createUser, getLoading }}>
             {children}
         </UserAuthContext.Provider>
     );

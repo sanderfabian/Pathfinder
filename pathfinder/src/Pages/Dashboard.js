@@ -495,6 +495,7 @@ function Dashboard() {
 
 
   return (
+    <div className='App'>
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="dashboard-container">
         <Navbar loggedIn={true} userData={null} />
@@ -579,6 +580,7 @@ function Dashboard() {
         )}
       </div>
     </DragDropContext>
+    </div>
   );
 
 }

@@ -68,6 +68,7 @@ export default function Home() {
 
 
   return (
+    <div className='App'>
     <div className='home'>
       <div className='gridHome'>
 
@@ -142,6 +143,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }
