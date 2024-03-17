@@ -398,7 +398,7 @@ letter-spacing: -0.05em;
     .grid-item4{
         grid-row-start: 4;
         grid-row-end: 6;
-        grid-column-start: 4;
+        grid-column-start: 3;
         grid-column-end: 5;
     }
 
@@ -407,7 +407,7 @@ letter-spacing: -0.05em;
     }
     .gr2{
         grid-column-start: 1;
-        grid-column-end: 4;
+        grid-column-end: 3;
         grid-row-start: 4;
         grid-row-end: 5;
 
@@ -415,7 +415,7 @@ letter-spacing: -0.05em;
 
     .gr3{
         grid-column-start: 1;
-        grid-column-end: 4;
+        grid-column-end: 3;
         grid-row-start: 5;
         grid-row-end: 6;
     }
