@@ -336,6 +336,15 @@ function Dashboard() {
     console.log(result);
   };
 
+  const addSemester = () => {
+    const newSemesterNumber = pathway.length + 1; // Calculate the new semester number
+    const newSemester = {
+      semester: newSemesterNumber.toString(),
+      courses: []
+    };
+    setPathwayData([...pathway, newSemester]); // Add the new semester to the pathway
+  };
+
   useEffect(() => {
     updateElectiveRequirements(pathway);
 
@@ -552,7 +561,11 @@ function Dashboard() {
             {pathway.map((semester, idx) => (
               <Semester key={idx} semesterData={semester} electiveCourses={electiveCourses} electiveMajorCourses={electiveMajorCourses} eventHandler={() => setIsSidePanelOpen(!isSidePanelOpen)} />
             ))}
+            <Button variant={2} onClick={addSemester} style={{ backgroundColor: 'var(--Tertiary)' }}>
+              + Add Semester
+            </Button>
           </div>
+          
         </div>
         {isResetModalOpen && (
           <div className="loading-screen" style={{ backgroundColor: '#484848c2', border: 'none' }}>
