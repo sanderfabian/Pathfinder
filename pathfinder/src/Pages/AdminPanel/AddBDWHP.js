@@ -128,7 +128,7 @@ const AddBDWHP = () => {
             <div style={{ flexGrow: 1, marginLeft: 0, padding: '16px' }}>
                 <Paper elevation={3} style={{ padding: '16px', border: '1px solid #ccc', borderRadius: '8px', marginBottom: '16px' }}>
                     <Typography variant="h6" gutterBottom>
-                        Bachelor Degree Program
+                        Bachelor Degree Program With Honours
                     </Typography>
                     <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
