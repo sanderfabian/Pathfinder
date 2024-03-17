@@ -179,6 +179,8 @@ function Dashboard() {
         // You can extract other major attributes here if needed
       } else {
         console.error(`Major document not found for ${major}`);
+        await resetPathway();
+        navigate("/form");
       }
 
       const fetchCourses = async (collectionName) => {
@@ -239,6 +241,8 @@ function Dashboard() {
 
     } catch (error) {
       console.error('Error fetching subcollections:', error);
+      await resetPathway();
+      navigate("/form");
     }
   };
 
