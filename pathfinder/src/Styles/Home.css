@@ -35,7 +35,7 @@ body::before {
 .gridHome{
     display: grid;
     gap: 10px;
-    min-height: inherit;
+    min-height: calc(100vh - 20px);
     grid-auto-rows:1fr min-content;
     grid-auto-columns: 1fr 1fr 0.8fr;
     position: relative;
