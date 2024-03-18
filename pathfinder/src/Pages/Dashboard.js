@@ -302,15 +302,17 @@ function Dashboard() {
       }
     }
 
-    // Iterate through all courses in the pathway and update Mutable and errMsg attributes
     updatedPathway.forEach((semester) => {
       semester.courses.forEach((course) => {
+        let allPrerequisitesFound = true;
+        
+        let unitsFound =true;
+        // Check CompulsoryPrerequisite
         if (
           course.CompulsoryPrerequisite &&
           course.CompulsoryPrerequisite !== 'Nil' &&
           course.CompulsoryPrerequisite.some((prerequisite) => prerequisite !== 'Nil')
         ) {
-          let allPrerequisitesFound = true;
           for (const prerequisite of course.CompulsoryPrerequisite) {
             if (prerequisite === 'Nil') continue; // Skip if the prerequisite is "Nil"
             let prerequisiteFound = false;
@@ -324,13 +326,39 @@ function Dashboard() {
               break;
             }
           }
-          if (!allPrerequisitesFound) {
-            course.Mutable = true;
-            course.errMsg = `Courses Required: "${course.CompulsoryPrerequisite.join(', ')}"`;
-          } else {
-            course.Mutable = false;
-            course.errMsg = '';
+        }
+        let remaining = 0;
+        // Check RequiredUnit
+        if (course.RequiredUnit && course.RequiredUnit !== 0) {
+          // Implement your logic here for RequiredUnit check
+          // For example, check if the total units completed meet the RequiredUnit
+          let totalUnitsCompleted = 0;
+          for (let i = 0; i < updatedPathway.indexOf(semester); i++) {
+            updatedPathway[i].courses.forEach((c) => {
+              totalUnitsCompleted += c.Unit;
+
+            });
           }
+          if (totalUnitsCompleted < course.RequiredUnit) {
+            unitsFound = false;
+            remaining = totalUnitsCompleted;
+          }
+        }
+    
+        if (!allPrerequisitesFound ) {
+          course.Mutable = true;
+          course.errMsg = `Courses Required: "${course.CompulsoryPrerequisite.join(', ')}"`;
+        } else if( !unitsFound){
+          course.Mutable = true;
+          if(!allPrerequisitesFound){
+            course.errMsg = `Requires: "${course.RequiredUnit} and "${course.CompulsoryPrerequisite.join(', ')}"`;
+          }
+          course.errMsg = `Requires: "${course.RequiredUnit - remaining}"`;
+        }
+        
+        else {
+          course.Mutable = false;
+          course.errMsg = '';
         }
       });
     });
@@ -350,7 +378,68 @@ function Dashboard() {
 
   useEffect(() => {
     updateElectiveRequirements(pathway);
-
+    const updatedPathwayWithCourse = pathway;
+    updatedPathwayWithCourse.forEach((semester) => {
+      semester.courses.forEach((course) => {
+        let allPrerequisitesFound = true;
+        
+        let unitsFound =true;
+        // Check CompulsoryPrerequisite
+        if (
+          course.CompulsoryPrerequisite &&
+          course.CompulsoryPrerequisite !== 'Nil' &&
+          course.CompulsoryPrerequisite.some((prerequisite) => prerequisite !== 'Nil')
+        ) {
+          for (const prerequisite of course.CompulsoryPrerequisite) {
+            if (prerequisite === 'Nil') continue; // Skip if the prerequisite is "Nil"
+            let prerequisiteFound = false;
+            for (let i = updatedPathwayWithCourse.indexOf(semester) - 1; i >= 0; i--) {
+              // Check if the prerequisite is present in any course of the current prior semester
+              prerequisiteFound = updatedPathwayWithCourse[i].courses.some((c) => String(c.id) === String(prerequisite));
+              if (prerequisiteFound) break;
+            }
+            if (!prerequisiteFound) {
+              allPrerequisitesFound = false;
+              break;
+            }
+          }
+        }
+        let remaining = 0;
+        // Check RequiredUnit
+        if (course.RequiredUnit && course.RequiredUnit !== 0) {
+          // Implement your logic here for RequiredUnit check
+          // For example, check if the total units completed meet the RequiredUnit
+          let totalUnitsCompleted = 0;
+          for (let i = 0; i < updatedPathwayWithCourse.indexOf(semester); i++) {
+            updatedPathwayWithCourse[i].courses.forEach((c) => {
+              totalUnitsCompleted += c.Unit;
+            });
+          }
+          if (totalUnitsCompleted < course.RequiredUnit) {
+            unitsFound = false;
+            remaining = totalUnitsCompleted;
+          }
+        }
+    
+        if (!allPrerequisitesFound ) {
+          course.Mutable = true;
+          course.errMsg = `Courses Required: "${course.CompulsoryPrerequisite.join(', ')}"`;
+        } else if( !unitsFound){
+          course.Mutable = true;
+          course.errMsg = `Requires: "${course.RequiredUnit - remaining}"`;
+        }
+        
+        else {
+          course.Mutable = false;
+          course.errMsg = '';
+        }
+      });
+    });
+    
+ 
+    
+    // Update the pathway state with the modified pathway
+    setPathwayData(updatedPathwayWithCourse);
   }, [pathway]);
 
   useEffect(() => {
@@ -448,7 +537,7 @@ function Dashboard() {
           const updatedPathwayWithCourse = updatedPathway.map(semester =>
             semester.semester === firstSemesterWithSpace.semester ? updatedSemester : semester
           );
-
+         
           // Update the pathway state with the modified pathway
           setPathwayData(updatedPathwayWithCourse);
         } else {
@@ -487,38 +576,7 @@ function Dashboard() {
       }));
 
 
-      // Iterate through all courses in the pathway and update Mutable and errMsg attributes
-    updatedPathway.forEach((semester) => {
-      semester.courses.forEach((course) => {
-        if (
-          course.CompulsoryPrerequisite &&
-          course.CompulsoryPrerequisite !== 'Nil' &&
-          course.CompulsoryPrerequisite.some((prerequisite) => prerequisite !== 'Nil')
-        ) {
-          let allPrerequisitesFound = true;
-          for (const prerequisite of course.CompulsoryPrerequisite) {
-            if (prerequisite === 'Nil') continue; // Skip if the prerequisite is "Nil"
-            let prerequisiteFound = false;
-            for (let i = updatedPathway.indexOf(semester) - 1; i >= 0; i--) {
-              // Check if the prerequisite is present in any course of the current prior semester
-              prerequisiteFound = updatedPathway[i].courses.some((c) => String(c.id) === String(prerequisite));
-              if (prerequisiteFound) break;
-            }
-            if (!prerequisiteFound) {
-              allPrerequisitesFound = false;
-              break;
-            }
-          }
-          if (!allPrerequisitesFound) {
-            course.Mutable = true;
-            course.errMsg = `Courses Required: "${course.CompulsoryPrerequisite.join(', ')}"`;
-          } else {
-            course.Mutable = false;
-            course.errMsg = '';
-          }
-        }
-      });
-    });
+
       setPathwayData(updatedPathway);
 
     }
@@ -637,6 +695,7 @@ function Dashboard() {
             <div className="loading-screen" style={{ backgroundColor: '#484848c2', border: 'none' }} onClick={() => setIsVideo(false)}>
               
               <div className="modal" >
+              <h3 style={{ margin: '0px', color: "var(--Tertiary)", letterSpacing: "-1px" }}>Need a hand?</h3>
               <p style={{ margin: '0px', color: "var(--FontDark)", marginBottom: "10px" }}>Click anywhere outside the card when you are done!</p>
                 <div className="modalContent" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' ,width:'60vw'}}>
                 <ReactPlayer url={localStorage.getItem('videoLink')} className='vid' height="70vh" width='60vw' style={{ borderRadius: '10px', border: '4px solid black' }} />
