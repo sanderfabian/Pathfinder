@@ -55,6 +55,7 @@ export default function Home() {
   const sideImage = homeData ? homeData.SideImage : "";
   const boxColour = homeData ? homeData.BoxColour : "";
   const logoImage = homeData ? homeData.LogoImage : "";
+  localStorage.setItem('videoLink', videoLink);
 
   if (!homeParagraph && !testimonialVideo && !videoLink && !sideImage && !logoImage) {
     return (
@@ -129,7 +130,7 @@ export default function Home() {
             </Link></div>
           <div className='testimonialHolder'>
             <div className='regBox' style={{ background: boxColour, justifyContent: "space-between" }}>
-              <img src={sideImage} width={280} height="85%" style={{ objectFit: "contain" }} />
+              <img src={sideImage} width={280} height="auto" style={{ objectFit: "contain", maxHeight:"50vh" }} />
               <div>
 
 

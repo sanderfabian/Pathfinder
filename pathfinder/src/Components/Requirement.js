@@ -5,10 +5,10 @@ import Lottie from 'react-lottie';
 import animationData from '../Assets/Animations/alert.json';
 import tick from '../Assets/Animations/tick.json'
 
-export default function Requirement({ name, req, isSatisfied}) {
+export default function Requirement({ name, req, isSatisfied, eventHandle}) {
   return (
-    <div className='requirementPill'>
-      <div className='reqType'>
+    <div className='requirementPill' onClick={eventHandle} style={{cursor:'pointer'}}>
+      <div className='reqType' >
       {isSatisfied ? (
       <Lottie options={{ animationData: tick ,loop: false}} width={30} height={30} />)
       :(

@@ -15,6 +15,7 @@ export default function Navbar() {
     try {
       await auth.signOut();
       navigate('/');
+      localStorage.removeItem('Username')
     } catch (error) {
       console.error('Error logging out:', error);
     }

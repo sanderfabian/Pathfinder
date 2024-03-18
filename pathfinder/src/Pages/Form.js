@@ -168,7 +168,7 @@ export default function Form() {
                 setPathwayCreated(true);
             } catch (error) {
                 console.error('Error:', error);
-             
+                setIsFetching(false);
             }
         };
     
@@ -332,7 +332,7 @@ export default function Form() {
                             await setDoc(courseDocRef, course); // Create course document
                         }));
                     }));
-                    setIsFetching(false);
+                   
     
               
                  

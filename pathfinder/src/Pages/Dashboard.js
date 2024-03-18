@@ -8,11 +8,13 @@ import PathwayCard from '../Components/PathwayCard';
 import '../Styles/Dashboard.css';
 import SmilingFace from '../Assets/Images/smilingFace.svg'
 import Button from '../Components/Button';
+import Question from '../Assets/Animations/question.json'
 import Semester from '../Components/Semester';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import ElectiveHolder from '../Components/ElectiveHolder';
 import Requirment from '../Components/Requirement';
 import Loading from '../Components/Loading';
+import ReactPlayer from 'react-player';
 import emojiLoad from '../Assets/Animations/emojiLoad.json';
 import Lottie from 'react-lottie';
 
@@ -38,6 +40,7 @@ function Dashboard() {
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [deleting, setIsDeleting] = useState(false);
+  const [isVideo, setIsVideo] = useState(false);
 
 
   useEffect(() => {
@@ -104,7 +107,7 @@ function Dashboard() {
 
 
   const resetPathway = async () => {
-    
+
     try {
       const user = auth.currentUser;
       console.log('Current user:', user); // Check if user is defined
@@ -141,7 +144,7 @@ function Dashboard() {
           // Delete the pathway document
           await deleteDoc(pathwayDocRef);
           console.log('Pathway document deleted:', pathwayDoc.id);
-          
+
         }));
 
 
@@ -482,6 +485,40 @@ function Dashboard() {
         ...semester,
         courses: semester.courses.filter(course => course.id !== courseId)
       }));
+
+
+      // Iterate through all courses in the pathway and update Mutable and errMsg attributes
+    updatedPathway.forEach((semester) => {
+      semester.courses.forEach((course) => {
+        if (
+          course.CompulsoryPrerequisite &&
+          course.CompulsoryPrerequisite !== 'Nil' &&
+          course.CompulsoryPrerequisite.some((prerequisite) => prerequisite !== 'Nil')
+        ) {
+          let allPrerequisitesFound = true;
+          for (const prerequisite of course.CompulsoryPrerequisite) {
+            if (prerequisite === 'Nil') continue; // Skip if the prerequisite is "Nil"
+            let prerequisiteFound = false;
+            for (let i = updatedPathway.indexOf(semester) - 1; i >= 0; i--) {
+              // Check if the prerequisite is present in any course of the current prior semester
+              prerequisiteFound = updatedPathway[i].courses.some((c) => String(c.id) === String(prerequisite));
+              if (prerequisiteFound) break;
+            }
+            if (!prerequisiteFound) {
+              allPrerequisitesFound = false;
+              break;
+            }
+          }
+          if (!allPrerequisitesFound) {
+            course.Mutable = true;
+            course.errMsg = `Courses Required: "${course.CompulsoryPrerequisite.join(', ')}"`;
+          } else {
+            course.Mutable = false;
+            course.errMsg = '';
+          }
+        }
+      });
+    });
       setPathwayData(updatedPathway);
 
     }
@@ -509,94 +546,107 @@ function Dashboard() {
 
   return (
     <div className='App'>
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="dashboard-container">
-        <Navbar loggedIn={true} userData={null} />
-        <div className="pathway-content">
-          <div className="side-panel-container">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }} className={`side-panel ${isSidePanelOpen ? 'open' : 'closed'}`}>
-              <div style={{ display: 'flex', padding: 10, justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--Secondary)', border: 'solid 3px #48484823', borderRadius: 5, marginTop: '10px' }}>
-                <h5>Fulfill your Elective requirement</h5>
-                <img src={SmilingFace} height={20} />
-              </div>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <div className="dashboard-container">
+          <Navbar loggedIn={true} userData={null} />
+          <div className="pathway-content">
+            <div className="side-panel-container">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }} className={`side-panel ${isSidePanelOpen ? 'open' : 'closed'}`}>
+                <div style={{ display: 'flex', padding: 10, justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--Secondary)', border: 'solid 3px #48484823', borderRadius: 5, marginTop: '10px' }}>
+                  <h5>Fulfill your Elective requirement</h5>
+                  <img src={SmilingFace} height={20} />
+                </div>
 
-              <div className='scrollable-div cardHolder'>
-                {/* Render ElectiveHolder for Elective Courses */}
-                <ElectiveHolder
-                  collectionName='Elective Courses' // Change documents to collection
-                  documents={electiveCourses}
-                  handleCheck={handleCheckboxChange}
-                  isChecked={isChecked}
-                  pathway={pathway}
-                />
-                {/* Render ElectiveHolder for Elective Major Courses */}
-                <ElectiveHolder
-                  collectionName='Elective Major Courses' // Change documents to collection
-                  documents={electiveMajorCourses}
-                  handleCheck={handleCheckboxChange}
-                  isChecked={isChecked}
-                  pathway={pathway}
-                />
+                <div className='scrollable-div cardHolder'>
+                  {/* Render ElectiveHolder for Elective Courses */}
+                  <ElectiveHolder
+                    collectionName='Elective Courses' // Change documents to collection
+                    documents={electiveCourses}
+                    handleCheck={handleCheckboxChange}
+                    isChecked={isChecked}
+                    pathway={pathway}
+                  />
+                  {/* Render ElectiveHolder for Elective Major Courses */}
+                  <ElectiveHolder
+                    collectionName='Elective Major Courses' // Change documents to collection
+                    documents={electiveMajorCourses}
+                    handleCheck={handleCheckboxChange}
+                    isChecked={isChecked}
+                    pathway={pathway}
+                  />
+                </div>
               </div>
+              <button className={`side-panel-toggle ${isSidePanelOpen ? 'open' : ''}`} onClick={() => setIsSidePanelOpen(!isSidePanelOpen)} style={{ backgroundColor: isSidePanelOpen ? 'var(--Alert)' : 'var(--Tertiary)' }}>
+                {isSidePanelOpen ? 'Close Panel' : 'Open Panel'}
+              </button>
             </div>
-            <button className={`side-panel-toggle ${isSidePanelOpen ? 'open' : ''}`} onClick={() => setIsSidePanelOpen(!isSidePanelOpen)} style={{ backgroundColor: isSidePanelOpen ? 'var(--Alert)' : 'var(--Tertiary)' }}>
-              {isSidePanelOpen ? 'Close Panel' : 'Open Panel'}
-            </button>
-          </div>
 
-          <div className='pathwayPanel'>
-            <div>
+            <div className='pathwayPanel'>
               <div>
-                <Requirment name="Elective  Units required:" req={electiveRequirementUpdate} isSatisfied={isElectiveSatisfied} />
-                <Requirment name="Elective  Major Units required:" req={electiveMajorRequirementUpdate} isSatisfied={isElectiveMajorSatisfied} />
+                <div>
+                  <Requirment name="Elective  Units required:" req={electiveRequirementUpdate} isSatisfied={isElectiveSatisfied} eventHandle={() => setIsSidePanelOpen(!isSidePanelOpen)}/>
+                  <Requirment name="Elective  Major Units required:" req={electiveMajorRequirementUpdate} isSatisfied={isElectiveMajorSatisfied} eventHandle={() => setIsSidePanelOpen(!isSidePanelOpen)}/>
+                </div>
+              </div>
+              <div className='btnControlPathway'>
+                <Button variant={1} additionalClass="helpBtn" onClick={() => setIsVideo(true)}><Lottie options={{ animationData: Question, loop: 'false' }} width={25} height={25} /></Button>
+                <Button variant={4} onClick={() => setIsResetModalOpen(true)} >Reset</Button>
+                <Button variant={2} onClick={handleSaveButtonClick}>Save</Button>
               </div>
             </div>
-            <div className='btnControlPathway'>
-
-              <Button variant={4} onClick={() => setIsResetModalOpen(true)} >Reset</Button>
-              <Button variant={2} onClick={handleSaveButtonClick}>Save</Button>
+            <div className='pathwayHolder'>
+              {pathway.map((semester, idx) => (
+                <Semester key={idx} semesterData={semester} electiveCourses={electiveCourses} electiveMajorCourses={electiveMajorCourses} eventHandler={() => setIsSidePanelOpen(!isSidePanelOpen)} />
+              ))}
+              <Button variant={2} onClick={addSemester} style={{ backgroundColor: 'var(--Tertiary)' }}>
+                + Add Semester
+              </Button>
             </div>
+
           </div>
-          <div className='pathwayHolder'>
-            {pathway.map((semester, idx) => (
-              <Semester key={idx} semesterData={semester} electiveCourses={electiveCourses} electiveMajorCourses={electiveMajorCourses} eventHandler={() => setIsSidePanelOpen(!isSidePanelOpen)} />
-            ))}
-            <Button variant={2} onClick={addSemester} style={{ backgroundColor: 'var(--Tertiary)' }}>
-              + Add Semester
-            </Button>
-          </div>
-          
-        </div>
-        {isResetModalOpen && (
-          <div className="loading-screen" style={{ backgroundColor: '#484848c2', border: 'none' }}>
-            <div className="modal">
-              <div className="modalContent">
-                <h4>Are you sure you want to reset?</h4>
-                <p>Resetting your pathway will delete your current pathway,<br></br> are you sure you want to reset your current pathway?</p>
-                <div className="modalActions">
-                  <Button variant={2} onClick={() => setIsResetModalOpen(false)}>No, Keep my current pathway</Button>
-                  <Button variant={4} onClick={handleResetConfirmation}>Yes, im ready to Reset</Button>
+          {isResetModalOpen && (
+            <div className="loading-screen" style={{ backgroundColor: '#484848c2', border: 'none' }}>
+              <div className="modal">
+                <div className="modalContent">
+                  <h4>Are you sure you want to reset?</h4>
+                  <p>Resetting your pathway will delete your current pathway,<br></br> are you sure you want to reset your current pathway?</p>
+                  <div className="modalActions">
+                    <Button variant={2} onClick={() => setIsResetModalOpen(false)}>No, Keep my current pathway</Button>
+                    <Button variant={4} onClick={handleResetConfirmation}>Yes, im ready to Reset</Button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-        {isSaving && (
-          <div className="loading-screen" style={{ backgroundColor: '#484848c2', border: 'none' }}>
+          )}
+          {isSaving && (
+            <div className="loading-screen" style={{ backgroundColor: '#484848c2', border: 'none' }}>
 
-            <div className="modal" >
-              <div className="modalContent" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <Lottie options={{ animationData: emojiLoad }} width={100} height={100} style={{ filter: "drop-shadow(3px 3px 2px rgb(0 0 0 / 0.2))", marginTop: "-80px" }} />
-                <h3 style={{ margin: '0px', color: "var(--Tertiary)", letterSpacing: "-1px" }}>Saving...</h3>
-                <p style={{ margin: '0px', color: "var(--FontDark)", marginBottom: "10px" }}>Saving your selection for future sessions!</p>
-                <MoonLoader color="var(--Tertiary)" loading={true} size={30} />
+              <div className="modal" >
+                <div className="modalContent" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <Lottie options={{ animationData: emojiLoad }} width={100} height={100} style={{ filter: "drop-shadow(3px 3px 2px rgb(0 0 0 / 0.2))", marginTop: "-80px" }} />
+                  <h3 style={{ margin: '0px', color: "var(--Tertiary)", letterSpacing: "-1px" }}>Saving...</h3>
+                  <p style={{ margin: '0px', color: "var(--FontDark)", marginBottom: "10px" }}>Saving your selection for future sessions!</p>
+                  <MoonLoader color="var(--Tertiary)" loading={true} size={30} />
+                </div>
+
               </div>
-
             </div>
-          </div>
-        )}
-      </div>
-    </DragDropContext>
+          )}
+
+          {isVideo && (
+            <div className="loading-screen" style={{ backgroundColor: '#484848c2', border: 'none' }} onClick={() => setIsVideo(false)}>
+              
+              <div className="modal" >
+              <p style={{ margin: '0px', color: "var(--FontDark)", marginBottom: "10px" }}>Click anywhere outside the card when you are done!</p>
+                <div className="modalContent" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' ,width:'60vw'}}>
+                <ReactPlayer url={localStorage.getItem('videoLink')} className='vid' height="70vh" width='60vw' style={{ borderRadius: '10px', border: '4px solid black' }} />
+                </div>
+
+              </div>
+            </div>
+          )}
+        </div>
+      </DragDropContext>
     </div>
   );
 
