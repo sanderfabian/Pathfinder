@@ -267,7 +267,7 @@
   
   padding: 5px;
   background-color: rgba(201, 162, 255, 0.16);
-  border: none;
+  border: 3px transparent solid;
   box-shadow: none;
   animation: pulse 1.5s ;
 }

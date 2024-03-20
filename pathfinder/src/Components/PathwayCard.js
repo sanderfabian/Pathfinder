@@ -41,7 +41,7 @@ export default function PathwayCard({ courseCode, courseName, mutable, courseTyp
 
   return (
     <div className='pathwayBlock'>
-      <div className='pathwayCard' style={{ border: mutable ? '3px solid var(--Alert)' : '3px solid var(--Border)', cursor: 'grab' }}>
+      <div className='pathwayCard' style={{ border: mutable ? '3px solid var(--Alert)' :courseType === "Elective" || courseType==="Elective Major" ? "3px dashed var(--Tertiary)" : '3px solid var(--Border)', cursor: 'grab' , backgroundColor: courseType === "Elective" || courseType==="Elective Major" ? '#ffffff' : '#ffffff', boxShadow:mutable? "rgba(243, 101,101, 0.8) 0px 3px 1px -2px, rgba(243, 101,101, 0.5) 0px 2px 2px 0px, rgba(243, 101,101, 0.3) 0px 2px 8px 0px": " rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px" }}>
         <div className='courseDetails' onClick={handleCardClick}>
           <h5 style={{ color: 'var(--Tertiary)' }}>{courseType}</h5>
           {mutable && (
@@ -52,7 +52,7 @@ export default function PathwayCard({ courseCode, courseName, mutable, courseTyp
           )}
           <div>
             <h4 style={{ color: 'var(--FontDark)' }}>{courseName}</h4>
-            <h5 style={{ color: 'var(--Border)' }}>{courseCode}</h5>
+            <h5 style={{ color:courseType === "Elective" || courseType==="Elective Major" ? "var(--Secondary)":'var(--Border)' }}>{courseCode}</h5>
           </div>
         </div>
       </div>

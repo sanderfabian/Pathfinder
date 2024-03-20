@@ -9,6 +9,7 @@ import '../Styles/Login.css';
 import { useUserAuth} from '../Components/AuthContext';
 import Button from '../Components/Button';
 import BackButton from '../Components/BackButton';
+import Loading from '../Components/Loading';
 
 
 function Register() {
@@ -19,10 +20,12 @@ function Register() {
     const [valid, setValid] = useState(false);
     const [error, setError] = useState(null);
     const { createUser } = useUserAuth();
+    const [isRegistering, setRegistering] = useState(false);
 
     const navigate = useNavigate();
 
     const handleRegister = async () => {
+        setRegistering(true);
         try {
             setError(null);
             const userCredential = await createUser(email, password);
@@ -43,6 +46,7 @@ function Register() {
         } catch (error) {
             console.error('Error registering user:', error);
             setError('Failed to register user. Please try again.');
+            setRegistering(false);
         }
     };
     
@@ -50,6 +54,12 @@ function Register() {
     const handleConfirm = (cpassword) => {
         setValid(cpassword === password);
     };
+
+    if (isRegistering) { 
+        return (
+            <Loading text="Welcome!" subtext="Creating your account..." color="var(--Tertiary)" />
+        );
+    }
 
     return (
         <div className="loginBody" style={{  backgroundColor: "var(--Tertiary)" }}>
