@@ -350,9 +350,9 @@ function Dashboard() {
         } else if( !unitsFound){
           course.Mutable = true;
           if(!allPrerequisitesFound){
-            course.errMsg = `Requires: "${course.RequiredUnit} units and "${course.CompulsoryPrerequisite.join(', ')}"`;
+            course.errMsg = `Requires: ${course.RequiredUnit} more units and "${course.CompulsoryPrerequisite.join(', ')}"`;
           }
-          course.errMsg = `Requires: "${course.RequiredUnit - remaining}" units`;
+          course.errMsg = `Requires: ${course.RequiredUnit - remaining} more units`;
         }
         
         else {
@@ -424,7 +424,7 @@ function Dashboard() {
           course.errMsg = `Courses Required: "${course.CompulsoryPrerequisite.join(', ')}"`;
         } else if( !unitsFound){
           course.Mutable = true;
-          course.errMsg = `Requires: "${course.RequiredUnit - remaining}" units`;
+          course.errMsg = `Requires: ${course.RequiredUnit - remaining} more units`;
         }
         
         else {
