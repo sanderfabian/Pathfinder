@@ -25,7 +25,7 @@ function Register() {
     const navigate = useNavigate();
 
     const handleRegister = async () => {
-        setRegistering(true);
+        
         try {
             setError(null);
             const userCredential = await createUser(email, password);
@@ -33,7 +33,7 @@ function Register() {
     
         
            
-    
+            setRegistering(true);
             // Add user document to Firestore User collection
             const userRef = doc(firestore, 'User', user.uid);
             await setDoc(userRef, {
