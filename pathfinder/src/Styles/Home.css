@@ -122,6 +122,10 @@ body::before {
 
 }
 
+.sideImg{
+height:80%;
+}
+
 .welcome div img{
     margin: auto;
 }
