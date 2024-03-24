@@ -130,7 +130,7 @@ export default function Home() {
             </Link></div>
           <div className='testimonialHolder'>
             <div className='regBox' style={{ background: boxColour, justifyContent: "space-between" }}>
-              <img src={sideImage} width="Auto" height="auto" style={{ objectFit: "contain", maxHeight:"50vh" , borderRadius:"5px"}} />
+              <img src={sideImage} width="Auto" height="auto" className="sideImg" style={{ objectFit: "contain", maxHeight:"50vh" , borderRadius:"5px"}} />
               <div>
 
 
