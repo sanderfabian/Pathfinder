@@ -330,8 +330,7 @@ function Dashboard() {
         let remaining = 0;
         // Check RequiredUnit
         if (course.RequiredUnit && course.RequiredUnit !== 0) {
-          // Implement your logic here for RequiredUnit check
-          // For example, check if the total units completed meet the RequiredUnit
+         
           let totalUnitsCompleted = 0;
           for (let i = 0; i < updatedPathway.indexOf(semester); i++) {
             updatedPathway[i].courses.forEach((c) => {
@@ -351,9 +350,9 @@ function Dashboard() {
         } else if( !unitsFound){
           course.Mutable = true;
           if(!allPrerequisitesFound){
-            course.errMsg = `Requires: "${course.RequiredUnit} and "${course.CompulsoryPrerequisite.join(', ')}"`;
+            course.errMsg = `Requires: ${course.RequiredUnit} more units and "${course.CompulsoryPrerequisite.join(', ')}"`;
           }
-          course.errMsg = `Requires: "${course.RequiredUnit - remaining}"`;
+          course.errMsg = `Requires: ${course.RequiredUnit - remaining} more units`;
         }
         
         else {
@@ -407,8 +406,7 @@ function Dashboard() {
         let remaining = 0;
         // Check RequiredUnit
         if (course.RequiredUnit && course.RequiredUnit !== 0) {
-          // Implement your logic here for RequiredUnit check
-          // For example, check if the total units completed meet the RequiredUnit
+          
           let totalUnitsCompleted = 0;
           for (let i = 0; i < updatedPathwayWithCourse.indexOf(semester); i++) {
             updatedPathwayWithCourse[i].courses.forEach((c) => {
@@ -426,7 +424,7 @@ function Dashboard() {
           course.errMsg = `Courses Required: "${course.CompulsoryPrerequisite.join(', ')}"`;
         } else if( !unitsFound){
           course.Mutable = true;
-          course.errMsg = `Requires: "${course.RequiredUnit - remaining}"`;
+          course.errMsg = `Requires: ${course.RequiredUnit - remaining} more units`;
         }
         
         else {
