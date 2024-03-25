@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ElectiveCard from './ElectiveCard';
 
-const ElectiveHolder = ({ collectionName, documents, handleCheck, pathway }) => {
+const ElectiveHolder = ({ collectionName, documents, handleCheck, pathway ,satColor }) => {
   // Create a state to store the checked state for each elective card
   const [checkedStates, setCheckedStates] = useState({});
 
@@ -28,9 +28,9 @@ const ElectiveHolder = ({ collectionName, documents, handleCheck, pathway }) => 
 
   return (
     <div>
-      <div className='availableCourses card' style={{ border: 'solid 3px #48484823', backgroundColor: '#48484823' }}>
+      <div className='availableCourses card' style={{ border: 'solid 3px #48484823', backgroundColor: '#48484823', borderColor:satColor }}>
         <div className='reqType'>
-          <h5>{collectionName}</h5>
+          <h5 >{collectionName}</h5>
         </div>
         {/* Map each ElectiveCard */}
         {documents.map((doc, index) => (

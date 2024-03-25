@@ -610,9 +610,14 @@ function Dashboard() {
           <div className="pathway-content">
             <div className="side-panel-container">
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }} className={`side-panel ${isSidePanelOpen ? 'open' : 'closed'}`}>
-                <div style={{ display: 'flex', padding: 10, justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'var(--Secondary)', border: 'solid 3px #48484823', borderRadius: 5, marginTop: '10px' }}>
-                  <h5>Fulfill your Elective requirement</h5>
-                  <img src={SmilingFace} height={20} />
+                <div style={{ display: 'flex',gap:"5px", justifyContent: 'space-between',padding:"10px",backgroundColor:"#f0f0f0",borderRadius:"10px", alignItems: 'stretch', flexDirection:"column",marginTop: '10px',border:"3px solid", borderColor: !isElectiveSatisfied || !isElectiveMajorSatisfied? "var(--Alert)":"var(--Tertiary)", boxShadow:!isElectiveSatisfied || !isElectiveMajorSatisfied? "rgba(243, 101,101, 0.8) 0px 3px 1px -2px, rgba(243, 101,101, 0.5) 0px 2px 2px 0px, rgba(243, 101,101, 0.3) 0px 2px 8px 0px": " rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px"  }}>
+                  
+                  <div>
+                  <h5 style={{textAlign:"start"}}>Requirements</h5>
+                  <Requirment name="Elective  Units required:" req={electiveRequirementUpdate} isSatisfied={isElectiveSatisfied} eventHandle={() => setIsSidePanelOpen(!isSidePanelOpen)}/>
+                  <Requirment name="Elective  Major Units required:" req={electiveMajorRequirementUpdate} isSatisfied={isElectiveMajorSatisfied} eventHandle={() => setIsSidePanelOpen(!isSidePanelOpen)}/>
+                </div>
+                  
                 </div>
 
                 <div className='scrollable-div cardHolder'>
@@ -623,6 +628,7 @@ function Dashboard() {
                     handleCheck={handleCheckboxChange}
                     isChecked={isChecked}
                     pathway={pathway}
+                    satColor={isElectiveSatisfied ?  "#48484823" : "var(--Alert)"}
                   />
                   {/* Render ElectiveHolder for Elective Major Courses */}
                   <ElectiveHolder
@@ -631,6 +637,7 @@ function Dashboard() {
                     handleCheck={handleCheckboxChange}
                     isChecked={isChecked}
                     pathway={pathway}
+                    satColor={isElectiveMajorSatisfied ?  "#48484823" : "var(--Alert)"}
                   />
                 </div>
               </div>
